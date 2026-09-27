@@ -27,9 +27,11 @@ export const BackCoverPageContent: React.FC<BackCoverPageContentProps> = ({
   return (
     <div className={`h-full min-h-0 flex flex-col justify-between text-center ${isSheet ? 'p-1' : 'p-2'}`}>
       <div className="shrink-0">
-        <div className="uppercase tracking-widest text-stone-500" style={{ fontSize: headingSize }}>
-          {page.title?.trim() || 'Contracapa'}
-        </div>
+        {page.title?.trim() && (
+          <div className="uppercase tracking-widest text-stone-500" style={{ fontSize: headingSize }}>
+            {page.title}
+          </div>
+        )}
         {page.subtitle?.trim() && (
           <p className="mt-1 italic text-stone-600" style={{ fontSize: headingSize }}>
             {page.subtitle}

@@ -964,13 +964,15 @@ function renderPanel(
 
     let minY = isHalfTop ? pHeight / 2 - margin + 3.0 : 8.0;
     let headingY = isHalfTop ? minY : 5.0;
-    doc.setFont(fontName, 'normal');
-    doc.setFontSize(Math.max(6.5, bodyPt - 1));
-    doc.setTextColor(100, 100, 100);
-    for (const line of doc.splitTextToSize((page.title?.trim() || 'Contracapa').toUpperCase(), contentWidth)) {
-      const point = mapPoint(contentWidth / 2, headingY);
-      doc.text(line, point.x, point.y, { angle: point.angle, align: 'center' });
-      headingY += lineHeightMm;
+    if (page.title?.trim()) {
+      doc.setFont(fontName, 'normal');
+      doc.setFontSize(Math.max(6.5, bodyPt - 1));
+      doc.setTextColor(100, 100, 100);
+      for (const line of doc.splitTextToSize(page.title.trim().toUpperCase(), contentWidth)) {
+        const point = mapPoint(contentWidth / 2, headingY);
+        doc.text(line, point.x, point.y, { angle: point.angle, align: 'center' });
+        headingY += lineHeightMm;
+      }
     }
     if (page.subtitle?.trim()) {
       doc.setFont(fontName, 'italic');

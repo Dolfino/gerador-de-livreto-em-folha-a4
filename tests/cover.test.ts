@@ -82,3 +82,29 @@ test('back cover title, subtitle, text and publisher appear in the PDF', async (
   const redistributed = distributeTextAcrossPages('Um texto curto.', settings, existingPages);
   assert.equal(redistributed.pages[7].subtitle, 'Palavras finais');
 });
+
+test('blank back cover title stays blank and is not replaced in the PDF', async () => {
+  const backCover = {
+    id: 8,
+    stableId: 'p-8',
+    editorialNumber: 8,
+    role: 'back-cover' as const,
+    title: '',
+    content: 'Texto sem título.',
+  };
+  const pdf = (await generateMinibookPDF([backCover], settings)).output();
+  assert.ok(pdf.includes('Texto sem título.'));
+  assert.ok(!pdf.includes('(CONTRACAPA) Tj'));
+
+  const existingPages = Array.from({ length: 8 }, (_, index) => ({
+    id: index + 1,
+    stableId: `p-${index + 1}`,
+    editorialNumber: index + 1,
+    role: index === 7 ? 'back-cover' as const : 'content' as const,
+    title: '',
+    content: '',
+  }));
+  existingPages[7] = backCover;
+  const redistributed = distributeTextAcrossPages('Um texto curto.', settings, existingPages);
+  assert.equal(redistributed.pages[7].title, '');
+});

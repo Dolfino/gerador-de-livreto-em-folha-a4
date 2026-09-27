@@ -807,7 +807,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                     type="text"
                     value={isCover ? (currentPage.title || '') : (/^P[áa]gina\s+\d+$/i.test((currentPage.title || '').trim()) ? '' : (currentPage.title || ''))}
                     onChange={(e) => onUpdatePage(currentPage.id, { title: e.target.value })}
-                    placeholder={isCover ? 'Título da Obra' : isBackCover ? 'Contracapa (opcional)' : 'Em branco (opcional)'}
+                    placeholder={isCover ? 'Título da Obra' : isBackCover ? 'Em branco = sem título' : 'Em branco (opcional)'}
                     className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded focus:ring-1 focus:ring-stone-900 focus:border-stone-900"
                   />
                 </div>
