@@ -77,7 +77,22 @@ export interface PageDocument {
 // Backward compatibility alias
 export type PageContent = PageDocument;
 
-export type FontSizeOption = 'sm' | 'md' | 'lg';
+export const FONT_SIZE_OPTIONS = [
+  { value: '6.5pt', label: '6.5 pt · Mínima' },
+  { value: '7pt', label: '7.0 pt · Muito Pequena' },
+  { value: '7.5pt', label: '7.5 pt · BuJo / Legenda' },
+  { value: '8pt', label: '8.0 pt · Compacta' },
+  { value: '8.5pt', label: '8.5 pt · Padrão A7' },
+  { value: '9pt', label: '9.0 pt · Leitura Fina' },
+  { value: '9.5pt', label: '9.5 pt · Moderada' },
+  { value: '10pt', label: '10.0 pt · Média' },
+  { value: '10.5pt', label: '10.5 pt · Confortável' },
+  { value: '11pt', label: '11.0 pt · Ampliada' },
+  { value: '11.5pt', label: '11.5 pt · Grande' },
+  { value: '12pt', label: '12.0 pt · Destaque' },
+] as const;
+
+export type FontSizeOption = (typeof FONT_SIZE_OPTIONS)[number]['value'] | 'sm' | 'md' | 'lg';
 export type FontFamilyOption = 'serif' | 'sans';
 export type MarginOption = 'compact' | 'standard' | 'generous';
 export type FoldGuideStyle = 'dashed' | 'subtle' | 'none';

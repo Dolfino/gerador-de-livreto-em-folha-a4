@@ -54,7 +54,7 @@ const DEFAULT_SETTINGS: BookSettings = {
     theme: 'literary',
   },
   headerFooter: DEFAULT_HEADER_FOOTER,
-  fontSize: 'md',
+  fontSize: '10pt',
   fontFamily: 'serif',
   margin: 'standard',
   textAlign: 'left',

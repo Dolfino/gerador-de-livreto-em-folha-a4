@@ -702,7 +702,7 @@ function renderPanel(
   let titlePt = 12;
   let lineHeightMm = 4.2;
 
-  if (page.fontSize && page.fontSize !== 'inherit') {
+  if ((page.fontSize && page.fontSize !== 'inherit') || settings.fontSize.endsWith('pt')) {
     const customPt = getPageFontSizePt(page, settings);
     bodyPt = customPt;
     titlePt = Math.max(9, customPt + 2);

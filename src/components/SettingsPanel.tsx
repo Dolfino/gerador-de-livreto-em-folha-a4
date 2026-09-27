@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   BookSettings,
   FontSizeOption,
+  FONT_SIZE_OPTIONS,
   MarginOption,
   FoldGuideStyle,
   HeaderFooterSettings,
@@ -21,6 +22,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { HeaderFooterEditor } from './HeaderFooterEditor';
+import { getPageFontSizePt } from '../utils/textDistributor';
 
 interface SettingsPanelProps {
   settings: BookSettings;
@@ -158,22 +160,16 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
             <Type className="w-3 h-3 text-stone-400" />
             Tamanho da Fonte
           </label>
-          <div className="flex bg-stone-100 p-0.5 rounded border border-stone-200">
-            {(['sm', 'md', 'lg'] as FontSizeOption[]).map((size) => (
-              <button
-                key={size}
-                type="button"
-                onClick={() => update('fontSize', size)}
-                className={`flex-1 py-1 rounded text-center transition-colors font-mono ${
-                  settings.fontSize === size
-                    ? 'bg-white text-stone-900 font-semibold shadow-xs'
-                    : 'text-stone-500 hover:text-stone-800'
-                }`}
-              >
-                {size === 'sm' ? '8.5pt' : size === 'md' ? '10pt' : '11.5pt'}
-              </button>
+          <select
+            aria-label="Tamanho da Fonte"
+            value={`${getPageFontSizePt(null, settings)}pt`}
+            onChange={(event) => update('fontSize', event.target.value as FontSizeOption)}
+            className="w-full bg-white border border-stone-300 text-stone-800 rounded px-2 py-1 cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
+          >
+            {FONT_SIZE_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>{label}</option>
             ))}
-          </div>
+          </select>
         </div>
 
         {/* Família de Fonte */}

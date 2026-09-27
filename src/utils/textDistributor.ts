@@ -43,6 +43,9 @@ export function getPageFontSizePt(
   // Fallback to book's global setting
   if (settings?.fontSize === 'sm') return 8.5;
   if (settings?.fontSize === 'lg') return 11.5;
+  if (settings?.fontSize && settings.fontSize.endsWith('pt')) {
+    return Number.parseFloat(settings.fontSize);
+  }
   return 10.0;
 }
 
@@ -880,10 +883,14 @@ export function suggestOptimalTypography(
 
   const is16P = mode === 'continuation-16p' || mode === 'booklet-bound-16p';
   const pageCount = is16P ? (mode === 'continuation-16p' ? 12 : 14) : 6;
+  const currentPt = settings
+    ? getPageFontSizePt(null, { ...settings, fontSize: currentFontSize })
+    : currentFontSize === 'sm' ? 8.5 : currentFontSize === 'lg' ? 11.5
+      : currentFontSize === 'md' ? 10 : Number.parseFloat(currentFontSize);
 
   const currentCap = settings
     ? getPageCapacity({ ...settings, fontSize: currentFontSize })
-    : FONT_CAPACITIES[currentFontSize] || FONT_CAPACITIES.md;
+    : { words: Math.round(145 * Math.pow(10 / currentPt, 1.2)) };
   const currentTotalCap = currentCap.words * pageCount;
 
   // If text overflows current font size
@@ -892,7 +899,7 @@ export function suggestOptimalTypography(
     const smCap = settings
       ? getPageCapacity({ ...settings, fontSize: 'sm' }).words * pageCount
       : FONT_CAPACITIES.sm.words * pageCount;
-    if (currentFontSize !== 'sm' && totalWords <= smCap * 1.1) {
+    if (currentPt > 8.5 && totalWords <= smCap * 1.1) {
       return {
         isNeeded: true,
         suggestedFontSize: 'sm',
@@ -903,7 +910,7 @@ export function suggestOptimalTypography(
     const lgCap = settings
       ? getPageCapacity({ ...settings, fontSize: 'lg' }).words * pageCount
       : FONT_CAPACITIES.lg.words * pageCount;
-    if (totalWords < lgCap * 0.9 && currentFontSize !== 'lg') {
+    if (totalWords < lgCap * 0.9 && currentPt < 11.5) {
       // If text is short, 'lg' or 'md' fills the pages better
       if (totalWords <= lgCap) {
         return {

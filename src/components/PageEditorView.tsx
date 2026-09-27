@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { PageDocument, BookSettings } from '../types';
+import { PageDocument, BookSettings, FONT_SIZE_OPTIONS } from '../types';
 import {
   ChevronLeft,
   ChevronRight,
@@ -1080,18 +1080,9 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                       <option value="inherit">
                         Padrão do Livro ({globalFontSizePt} pt)
                       </option>
-                      <option value="6.5pt">6.5 pt · Mínima</option>
-                      <option value="7pt">7.0 pt · Muito Pequena</option>
-                      <option value="7.5pt">7.5 pt · BuJo / Legenda</option>
-                      <option value="8pt">8.0 pt · Compacta</option>
-                      <option value="8.5pt">8.5 pt · Padrão A7</option>
-                      <option value="9pt">9.0 pt · Leitura Fina</option>
-                      <option value="9.5pt">9.5 pt · Moderada</option>
-                      <option value="10pt">10.0 pt · Média</option>
-                      <option value="10.5pt">10.5 pt · Confortável</option>
-                      <option value="11pt">11.0 pt · Ampliada</option>
-                      <option value="11.5pt">11.5 pt · Grande</option>
-                      <option value="12pt">12.0 pt · Destaque</option>
+                      {FONT_SIZE_OPTIONS.map(({ value, label }) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
                     </select>
 
                     <button
