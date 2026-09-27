@@ -727,25 +727,23 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                       <button
                         type="button"
                         onClick={() => setIsLinkModalOpen(true)}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10.5px] font-medium text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded transition-colors cursor-pointer ml-0.5"
+                        className="p-1 text-amber-800 hover:text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 rounded transition-colors cursor-pointer"
                         title="Inserir Link em Markdown ([Texto](URL), tooltip, referências, âncoras ou arquivos)"
                       >
                         <LinkIcon className="w-3 h-3 text-amber-700" />
-                        <span>Link</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsQrModalOpen(true)}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10.5px] font-semibold text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200/90 rounded transition-colors cursor-pointer ml-0.5"
+                        className="p-1 text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200/90 rounded transition-colors cursor-pointer"
                         title="Inserir QR Code Phygital ([qr: Legenda](URL) - Pasta no Drive, arquivos ou nuvem)"
                       >
                         <QrCode className="w-3 h-3 text-purple-700" />
-                        <span>QR Code</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsImageModalOpen(true)}
-                        className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10.5px] font-semibold rounded transition-colors cursor-pointer ml-0.5 ${
+                        className={`p-1 rounded transition-colors cursor-pointer relative ${
                           activeImages.hasImages && activeImages.layout !== 'none'
                             ? 'text-teal-900 bg-teal-100 border border-teal-300'
                             : 'text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-200/90'
@@ -753,9 +751,8 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                         title="Adicionar ou Configurar Imagem A7 (Folha inteira, meia folha, 2 ou 4 fotos)"
                       >
                         <ImageIcon className="w-3 h-3 text-teal-700" />
-                        <span>Imagem A7</span>
                         {activeImages.hasImages && activeImages.layout !== 'none' && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-pulse" />
+                          <span className="w-1.5 h-1.5 rounded-full bg-teal-600 animate-pulse absolute -top-0.5 -right-0.5" />
                         )}
                       </button>
                     </div>

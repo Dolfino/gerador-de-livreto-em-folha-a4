@@ -555,11 +555,10 @@ export const TextPreparationView: React.FC<TextPreparationViewProps> = ({
                 setSelectedText(sel);
                 setIsLinkModalOpen(true);
               }}
-              className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 rounded transition-colors cursor-pointer ml-0.5"
+              className="p-1.5 text-amber-800 hover:text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 rounded transition-colors cursor-pointer"
               title="Inserir Link em Markdown ([Texto](URL), referências, âncoras ou arquivos)"
             >
               <LinkIcon className="w-3.5 h-3.5 text-amber-700" />
-              <span>Link</span>
             </button>
             <button
               type="button"
@@ -570,11 +569,10 @@ export const TextPreparationView: React.FC<TextPreparationViewProps> = ({
                 setSelectedText(sel);
                 setIsQrModalOpen(true);
               }}
-              className="inline-flex items-center gap-1 px-2 py-1 text-[11px] font-semibold text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200/90 rounded transition-colors cursor-pointer ml-0.5"
+              className="p-1.5 text-purple-900 bg-purple-50 hover:bg-purple-100 border border-purple-200/90 rounded transition-colors cursor-pointer"
               title="Inserir QR Code Phygital ([qr: Legenda](URL) - Pasta no Drive, arquivos ou nuvem)"
             >
               <QrCode className="w-3.5 h-3.5 text-purple-700" />
-              <span>QR Code Phygital</span>
             </button>
           </div>
 
