@@ -233,7 +233,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
 
   const handleStepFontSize = (delta: number) => {
     const currentPt = getPageFontSizePt(currentPage, settings);
-    const newPt = Math.max(6.0, Math.min(13.0, Math.round((currentPt + delta) * 2) / 2));
+    const newPt = Math.max(6.5, Math.min(12.0, Math.round((currentPt + delta) * 2) / 2));
     onUpdatePage(currentPage.id, { fontSize: `${newPt}pt` });
   };
 

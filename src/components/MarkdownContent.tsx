@@ -20,6 +20,7 @@ interface MarkdownContentProps {
   className?: string;
   compact?: boolean;
   isPrint?: boolean;
+  inheritFontSize?: boolean;
   onNavigateAnchor?: (anchorId: string) => void;
   externalRefMap?: Map<string, { href: string; title?: string }>;
 }
@@ -39,6 +40,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
   className = '',
   compact = false,
   isPrint = false,
+  inheritFontSize = false,
   onNavigateAnchor,
   externalRefMap,
 }) => {
@@ -260,7 +262,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
           {line.qrCaption && (
             <p
               className={`font-semibold text-stone-800 leading-tight mt-1 ${
-                compact ? 'text-[8px] line-clamp-1' : isPrint ? 'text-[8.5pt]' : 'text-[10.5px]'
+                inheritFontSize ? 'text-[1em] line-clamp-1' : compact ? 'text-[8px] line-clamp-1' : isPrint ? 'text-[8.5pt]' : 'text-[10.5px]'
               }`}
             >
               {line.qrCaption}
@@ -288,7 +290,9 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
           key={idx}
           id={line.anchorId ? `heading-${line.anchorId}` : undefined}
           className={`font-bold font-serif text-stone-900 scroll-mt-6 ${
-            compact
+            inheritFontSize
+              ? 'text-[1.15em] pt-0.5'
+              : compact
               ? 'text-[10px] pt-0.5'
               : isPrint
               ? 'text-[10pt] pt-1 pb-0.5 border-b border-stone-100'
@@ -306,7 +310,9 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
           key={idx}
           id={line.anchorId ? `heading-${line.anchorId}` : undefined}
           className={`font-bold text-stone-900 scroll-mt-6 ${
-            compact
+            inheritFontSize
+              ? 'text-[1.08em] pt-0.5'
+              : compact
               ? 'text-[9.5px] pt-0.5'
               : isPrint
               ? 'text-[9pt] pt-0.5'
@@ -324,7 +330,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
           key={idx}
           id={line.anchorId ? `heading-${line.anchorId}` : undefined}
           className={`font-semibold text-stone-800 scroll-mt-6 ${
-            compact ? 'text-[9px]' : isPrint ? 'text-[8.5pt]' : 'text-[10.5px]'
+            inheritFontSize ? 'text-[1em]' : compact ? 'text-[9px]' : isPrint ? 'text-[8.5pt]' : 'text-[10.5px]'
           }`}
         >
           {line.spans.map(renderSpan)}
@@ -337,7 +343,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
         <blockquote
           key={idx}
           className={`border-l-2.5 border-amber-600/70 bg-amber-50/50 pl-2.5 py-1 my-1 italic text-stone-700 rounded-r ${
-            compact ? 'text-[8.5px]' : isPrint ? 'text-[9pt]' : 'text-xs'
+            inheritFontSize ? 'text-[1em]' : compact ? 'text-[8.5px]' : isPrint ? 'text-[9pt]' : 'text-xs'
           }`}
         >
           {line.spans.map(renderSpan)}
@@ -361,7 +367,9 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
           <div
             key={idx}
             className={`grid grid-cols-2 gap-1.5 py-0.5 items-baseline ${
-              compact
+              inheritFontSize
+                ? 'text-[0.95em] leading-tight'
+                : compact
                 ? 'text-[7.8px] leading-tight'
                 : isPrint
                 ? 'text-[8pt] leading-tight'
@@ -386,8 +394,10 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
         <div
           key={idx}
           className={`grid gap-0.5 py-0.5 items-center text-stone-800 text-center ${
-            compact
-              ? 'text-[7.5px] leading-tight'
+              inheritFontSize
+                ? 'text-[0.95em] leading-tight'
+                : compact
+                ? 'text-[7.5px] leading-tight'
               : isPrint
               ? 'text-[8pt] leading-tight'
               : 'text-[9.5px] leading-snug'
@@ -430,7 +440,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
       <p
         key={idx}
         className={`${alignClass} leading-relaxed ${
-          compact ? 'line-clamp-6 text-[8.5px]' : ''
+          compact ? `line-clamp-6 ${inheritFontSize ? 'text-[1em]' : 'text-[8.5px]'}` : ''
         }`}
       >
         {line.spans.map(renderSpan)}

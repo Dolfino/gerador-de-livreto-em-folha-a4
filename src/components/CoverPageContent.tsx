@@ -14,38 +14,33 @@ interface CoverPageContentProps {
 
 const styles: Record<CoverVariant, {
   rule: string;
-  title: string;
   subtitle: string;
   body: string;
   author: string;
 }> = {
   editor: {
     rule: 'w-8 h-0.5 mb-3',
-    title: 'text-base',
-    subtitle: 'text-[10px] mt-1',
-    body: 'mt-3 text-[9px] leading-snug',
-    author: 'text-[10px] mt-3',
+    subtitle: 'mt-1',
+    body: 'mt-3 leading-snug',
+    author: 'mt-3',
   },
   reading: {
     rule: 'w-10 h-0.5 mb-4',
-    title: 'text-xl md:text-2xl',
-    subtitle: 'text-xs md:text-sm mt-2',
-    body: 'mt-4 text-[10px] md:text-xs leading-snug',
-    author: 'text-xs mt-4',
+    subtitle: 'mt-2',
+    body: 'mt-4 leading-snug',
+    author: 'mt-4',
   },
   print: {
     rule: 'w-8 h-0.5 mb-2',
-    title: 'text-[12pt]',
-    subtitle: 'text-[8pt] mt-1',
+    subtitle: 'mt-1',
     body: 'mt-3 leading-snug',
-    author: 'text-[7.5pt] mt-3',
+    author: 'mt-3',
   },
   sheet: {
     rule: 'w-6 h-0.5 mb-2',
-    title: 'text-[11px]',
-    subtitle: 'text-[7.5px] mt-0.5 line-clamp-1',
-    body: 'mt-1 text-[7.5px] leading-tight',
-    author: 'text-[7.5px] mt-1',
+    subtitle: 'mt-0.5 line-clamp-1',
+    body: 'mt-1 leading-tight',
+    author: 'mt-1',
   },
 };
 
@@ -56,6 +51,27 @@ export const CoverPageContent: React.FC<CoverPageContentProps> = ({
   onNavigateAnchor,
 }) => {
   const style = styles[variant];
+  const bodyPt = getPageFontSizePt(page, settings);
+  const fontSizes = variant === 'sheet'
+    ? {
+        title: `${bodyPt * 0.85 + 3.8}px`,
+        subtitle: `${bodyPt * 0.85}px`,
+        body: `${bodyPt * 0.85}px`,
+        author: `${bodyPt * 0.85}px`,
+      }
+    : variant === 'reading'
+    ? {
+        title: `${bodyPt * 2.05}pt`,
+        subtitle: `${bodyPt * 1.15}pt`,
+        body: `${bodyPt * 1.1}pt`,
+        author: `${bodyPt * 1.05}pt`,
+      }
+    : {
+        title: `${bodyPt + 3.5}pt`,
+        subtitle: `${Math.max(5.5, bodyPt - 1)}pt`,
+        body: `${Math.max(5.5, bodyPt - 0.5)}pt`,
+        author: `${Math.max(5.5, bodyPt - 1)}pt`,
+      };
   const hasHeading = !!(page.title?.trim() || page.subtitle?.trim() || page.author?.trim());
   const hasBody = !!page.content?.trim();
 
@@ -63,12 +79,12 @@ export const CoverPageContent: React.FC<CoverPageContentProps> = ({
     <div className={`h-full min-h-0 flex flex-col justify-center items-center text-center ${variant === 'sheet' ? 'p-1' : 'p-2'}`}>
       {hasHeading && <div className={`${style.rule} bg-stone-900 shrink-0`} />}
       {page.title?.trim() && (
-        <h4 className={`${style.title} font-bold font-serif leading-tight text-stone-900 shrink-0`}>
+        <h4 className="font-bold font-serif leading-tight text-stone-900 shrink-0" style={{ fontSize: fontSizes.title }}>
           {page.title}
         </h4>
       )}
       {page.subtitle?.trim() && (
-        <p className={`${style.subtitle} text-stone-600 italic leading-tight shrink-0`}>
+        <p className={`${style.subtitle} text-stone-600 italic leading-tight shrink-0`} style={{ fontSize: fontSizes.subtitle }}>
           {page.subtitle}
         </p>
       )}
@@ -76,19 +92,20 @@ export const CoverPageContent: React.FC<CoverPageContentProps> = ({
         <div
           aria-label="Texto da capa"
           className={`${style.body} w-full text-stone-700`}
-          style={variant === 'print' ? { fontSize: `${getPageFontSizePt(page, settings)}pt` } : undefined}
+          style={{ fontSize: fontSizes.body }}
         >
           <MarkdownContent
             content={page.content || ''}
             textAlign="center"
             compact={variant === 'sheet'}
             isPrint={variant === 'print'}
+            inheritFontSize
             onNavigateAnchor={onNavigateAnchor}
           />
         </div>
       )}
       {page.author?.trim() && (
-        <p className={`${style.author} text-stone-800 font-medium tracking-wide uppercase shrink-0`}>
+        <p className={`${style.author} text-stone-800 font-medium tracking-wide uppercase shrink-0`} style={{ fontSize: fontSizes.author }}>
           {page.author}
         </p>
       )}

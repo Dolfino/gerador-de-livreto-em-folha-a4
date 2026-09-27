@@ -39,3 +39,17 @@ test('PDF includes the Bullet Journal cover template text', async () => {
   assert.ok(pdf.includes('Propósito:'));
   assert.ok(pdf.includes('PLANEJAMENTO PESSOAL'));
 });
+
+test('PDF uses the selected font size for cover text', async () => {
+  const cover = { ...BULLET_JOURNAL_PAGES[0], content: 'Texto curto' };
+  const getBodyFontSize = async (fontSize: '6.5pt' | '12pt') => {
+    const pdf = (await generateMinibookPDF([{ ...cover, fontSize }], settings)).output();
+    const textIndex = pdf.indexOf('(Texto) Tj');
+    assert.ok(textIndex >= 0);
+    const fontCommands = [...pdf.slice(0, textIndex).matchAll(/\/F\d+ ([\d.]+) Tf/g)];
+    return Number(fontCommands.at(-1)?.[1]);
+  };
+
+  assert.equal(await getBodyFontSize('6.5pt'), 6);
+  assert.equal(await getBodyFontSize('12pt'), 11.5);
+});
