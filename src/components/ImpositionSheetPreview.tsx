@@ -19,6 +19,7 @@ import { MarkdownContent } from './MarkdownContent';
 import { PageImageRenderer } from './PageImageRenderer';
 import { resolvePageImages } from '../utils/imageHelper';
 import { getPageFontSizePt } from '../utils/textDistributor';
+import { CoverPageContent } from './CoverPageContent';
 
 interface ImpositionSheetPreviewProps {
   pages: PageDocument[];
@@ -713,26 +714,7 @@ const ImpositionPanelCard: React.FC<{
                   />
                 </div>
               ) : isCover ? (
-                <div className="h-full flex flex-col justify-center items-center text-center p-1">
-                  {(page.title?.trim() || page.subtitle?.trim() || page.author?.trim()) && (
-                    <div className="w-6 h-0.5 bg-stone-900 mb-2" />
-                  )}
-                  {page.title?.trim() && (
-                    <h4 className="font-bold text-[11px] font-serif leading-tight">
-                      {page.title}
-                    </h4>
-                  )}
-                  {page.subtitle?.trim() && (
-                    <p className="text-[7.5px] text-stone-500 italic mt-0.5 line-clamp-1">
-                      {page.subtitle}
-                    </p>
-                  )}
-                  {page.author?.trim() && (
-                    <p className="text-[7.5px] text-stone-700 font-medium mt-1 uppercase">
-                      {page.author}
-                    </p>
-                  )}
-                </div>
+                <CoverPageContent page={page} settings={settings} variant="sheet" />
               ) : isBackCover ? (
                 <div className="h-full flex flex-col justify-between text-center p-1">
                   <span className="text-[7.5px] uppercase tracking-wider text-stone-400">

@@ -26,6 +26,7 @@ export function sanitizeForJsPdf(text: string): string {
   return expandTabs(text)
     .replace(/□/g, '[ ]')
     .replace(/○/g, '( )')
+    .replace(/▲/g, '*')
     .replace(/👁/g, '[Pesq]')
     .replace(/📑/g, '')
     .replace(/🗝️?/g, '')
@@ -865,7 +866,8 @@ function renderPanel(
 
   // Cover Page
   if (isCover) {
-    const titleY = isHalfTop ? 56 : isHalfBottom ? 12 : 32;
+    const hasCoverText = !!page.content?.trim();
+    const titleY = isHalfTop ? 56 : isHalfBottom ? 12 : hasCoverText ? 13 : 32;
     doc.setFont(fontName, 'bold');
     doc.setFontSize(titlePt + 2);
     doc.setTextColor(20, 20, 20);
@@ -893,11 +895,60 @@ function renderPanel(
       }
     }
 
+    if (hasCoverText) {
+      currY += 2;
+      const maxY = isHalfBottom
+        ? pHeight / 2 - margin - 2
+        : page.author?.trim() ? contentHeight - 15 : contentHeight - 2;
+      for (const item of parseMarkdownText(page.content || '')) {
+        if (currY >= maxY) break;
+
+        if (item.isQrCode && item.qrUrl) {
+          currY = renderQrCodeBlock(
+            doc, item, colX, rowY, pWidth, pHeight, margin,
+            contentWidth, currY, maxY, rotated, fontName, mapPoint
+          );
+          continue;
+        }
+
+        if (item.isDivider) {
+          doc.setDrawColor(210, 210, 210);
+          doc.setLineWidth(0.2);
+          const left = mapPoint(contentWidth * 0.15, currY);
+          const right = mapPoint(contentWidth * 0.85, currY);
+          doc.line(left.x, left.y, right.x, right.y);
+          currY += lineHeightMm * 0.7;
+          continue;
+        }
+
+        if (!item.text) {
+          currY += lineHeightMm * 0.45;
+          continue;
+        }
+
+        const heading = item.isHeading1 || item.isHeading2 || item.isHeading3;
+        const fontSize = heading ? bodyPt + 0.5 : bodyPt - 0.5;
+        const lines = layoutPdfSpans(
+          doc, item.spans, contentWidth, fontName, heading ? 'bold' : 'normal', fontSize
+        );
+        const color: [number, number, number] = heading ? [30, 30, 30] : [60, 60, 60];
+        for (const line of lines) {
+          const height = pdfLineHeight(line, fontSize, lineHeightMm);
+          if (currY + height > maxY) break;
+          drawPdfSpans(
+            doc, line, (contentWidth - line.width) / 2, currY,
+            mapPoint, rotated, color, height
+          );
+          currY += height * 1.1;
+        }
+      }
+    }
+
     if (page.author?.trim()) {
       doc.setFont(fontName, 'normal');
       doc.setFontSize(bodyPt - 0.5);
       doc.setTextColor(50, 50, 50);
-      const authorY = isHalfBottom ? 42 : 75;
+      const authorY = isHalfBottom ? 42 : hasCoverText ? contentHeight - 7 : 75;
       const pt = mapPoint(contentWidth / 2, authorY);
       doc.text(page.author.trim().toUpperCase(), pt.x, pt.y, { angle: pt.angle, align: 'center' });
     }

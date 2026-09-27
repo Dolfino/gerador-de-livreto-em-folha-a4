@@ -20,6 +20,7 @@ import { getPageFontSizePt } from '../utils/textDistributor';
 import { slugify } from '../utils/markdownParser';
 import { PageImageRenderer } from './PageImageRenderer';
 import { resolvePageImages } from '../utils/imageHelper';
+import { CoverPageContent } from './CoverPageContent';
 
 interface ReadingPreviewProps {
   pages: PageDocument[];
@@ -778,24 +779,7 @@ const PageBookFace: React.FC<{
             <PageImageRenderer layout="four" images={pageImages.images} showLabels className="flex-1" />
           </div>
         ) : isCover ? (
-          <div className="h-full flex flex-col justify-center items-center text-center p-2">
-            {(page.title?.trim() || page.subtitle?.trim() || page.author?.trim()) && (
-              <div className="w-10 h-0.5 bg-stone-900 mb-4" />
-            )}
-            {page.title?.trim() && (
-              <h3 className="text-xl md:text-2xl font-bold font-serif leading-tight text-stone-900">
-                {page.title}
-              </h3>
-            )}
-            {page.subtitle?.trim() && (
-              <p className="text-xs md:text-sm text-stone-600 mt-2 italic">{page.subtitle}</p>
-            )}
-            {page.author?.trim() && (
-              <p className="text-xs text-stone-800 font-semibold mt-4 tracking-widest uppercase">
-                {page.author}
-              </p>
-            )}
-          </div>
+          <CoverPageContent page={page} settings={settings} variant="reading" onNavigateAnchor={onNavigateAnchor} />
         ) : isBackCover ? (
           <div className="h-full flex flex-col justify-between p-2 text-center">
             <div className="text-[10px] uppercase tracking-widest text-stone-400">Contracapa</div>

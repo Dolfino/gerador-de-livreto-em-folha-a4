@@ -7,6 +7,7 @@ import { PageImageRenderer } from './PageImageRenderer';
 import { resolvePageImages } from '../utils/imageHelper';
 import { getPageFontSizePt } from '../utils/textDistributor';
 import { Scissors } from 'lucide-react';
+import { CoverPageContent } from './CoverPageContent';
 
 interface PrintSheetContainerProps {
   pages: PageDocument[];
@@ -465,22 +466,7 @@ const PrintPanelContent: React.FC<{
             <PageImageRenderer layout="four" images={pageImages.images} isPrint className="flex-1" />
           </div>
         ) : isCover ? (
-          <div className="h-full flex flex-col justify-center items-center text-center p-2">
-            {(page.title?.trim() || page.subtitle?.trim() || page.author?.trim()) && (
-              <div className="w-8 h-0.5 bg-stone-900 mb-2" />
-            )}
-            {page.title?.trim() && (
-              <h1 className="text-[12pt] font-serif font-bold leading-tight">{page.title}</h1>
-            )}
-            {page.subtitle?.trim() && (
-              <p className="text-[8pt] text-stone-600 italic mt-1">{page.subtitle}</p>
-            )}
-            {page.author?.trim() && (
-              <p className="text-[7.5pt] text-stone-800 font-medium mt-3 uppercase tracking-wider">
-                {page.author}
-              </p>
-            )}
-          </div>
+          <CoverPageContent page={page} settings={settings} variant="print" />
         ) : isBackCover ? (
           <div className="h-full flex flex-col justify-between text-center p-2">
             <span className="text-[7pt] uppercase tracking-widest text-stone-400">Contracapa</span>

@@ -43,6 +43,7 @@ import { ImageInsertModal } from './ImageInsertModal';
 import { resolvePageImages } from '../utils/imageHelper';
 import { countMarkdownWords, slugify } from '../utils/markdownParser';
 import { PageImageLayout } from '../types';
+import { CoverPageContent } from './CoverPageContent';
 
 interface PageEditorViewProps {
   pages: PageDocument[];
@@ -382,7 +383,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
     checkOverflow();
     const timer = setTimeout(checkOverflow, 120);
     return () => clearTimeout(timer);
-  }, [currentPage.content, currentPage.fontSize, settings.fontSize, settings.fontFamily, settings.lineHeight]);
+  }, [currentPage.content, currentPage.title, currentPage.subtitle, currentPage.author, currentPage.fontSize, settings.fontSize, settings.fontFamily, settings.lineHeight]);
 
   // Track selection inside textarea or preview
   const handleSelectionChange = () => {
@@ -839,6 +840,22 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                 )}
               </div>
 
+              {isCover && (
+                <div>
+                  <label htmlFor="cover-author" className="block text-xs font-semibold text-stone-700 mb-1">
+                    Autor da Capa
+                  </label>
+                  <input
+                    id="cover-author"
+                    type="text"
+                    value={currentPage.author || ''}
+                    onChange={(e) => onUpdatePage(currentPage.id, { author: e.target.value })}
+                    placeholder="Nome ou assinatura (opcional)"
+                    className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded focus:ring-1 focus:ring-stone-900 focus:border-stone-900"
+                  />
+                </div>
+              )}
+
               {/* Word Header & Footer Quick Status & Action */}
               <div className="bg-stone-50 border border-stone-200/80 rounded-lg p-2.5 flex items-center justify-between text-xs flex-wrap gap-2">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -874,7 +891,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                 {/* Linha 1: Título da Seção e Badges de Status / Capacidade */}
                 <div className="flex items-center justify-between pb-1.5 flex-wrap gap-2">
                   <label className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
-                    <span>Conteúdo da Página</span>
+                    <span>{isCover ? 'Texto adicional da capa' : 'Conteúdo da Página'}</span>
                     {isInternal && (
                       <span className="text-[11px] text-stone-400 font-normal hidden sm:inline">
                         (Selecione um trecho para movê-lo)
@@ -1126,7 +1143,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                 </p>
                 <textarea
                   ref={textareaRef}
-                  aria-label="Conteúdo da Página"
+                  aria-label={isCover ? 'Texto adicional da capa' : 'Conteúdo da Página'}
                   aria-describedby="page-spacing-hint"
                   rows={8}
                   value={currentPage.content || ''}
@@ -1135,7 +1152,9 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                   onSelect={handleSelectionChange}
                   onKeyUp={handleSelectionChange}
                   onMouseUp={handleSelectionChange}
-                  placeholder="Escreva ou edite o conteúdo desta página... Dica: selecione qualquer trecho com o mouse para enviá-lo diretamente para a próxima página."
+                  placeholder={isCover
+                    ? 'Escreva o texto que deve aparecer abaixo do subtítulo. Deixe vazio para uma capa simples.'
+                    : 'Escreva ou edite o conteúdo desta página... Dica: selecione qualquer trecho com o mouse para enviá-lo diretamente para a próxima página.'}
                   style={{
                     tabSize: TAB_SIZE,
                     fontSize: `${Math.max(12, Math.min(18, Math.round(effectiveFontSizePt * 1.35)))}px`,
@@ -1656,28 +1675,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                           />
                         </div>
                       ) : isCover ? (
-                        <div className="h-full flex flex-col justify-center items-center text-center p-2">
-                          {(currentPage.title?.trim() ||
-                            currentPage.subtitle?.trim() ||
-                            currentPage.author?.trim()) && (
-                            <div className="w-8 h-0.5 bg-stone-900 mb-3" />
-                          )}
-                          {currentPage.title?.trim() && (
-                            <h4 className="text-base font-bold font-serif leading-tight">
-                              {currentPage.title}
-                            </h4>
-                          )}
-                          {currentPage.subtitle?.trim() && (
-                            <p className="text-[10px] text-stone-600 mt-1 italic leading-tight">
-                              {currentPage.subtitle}
-                            </p>
-                          )}
-                          {currentPage.author?.trim() && (
-                            <p className="text-[10px] text-stone-800 font-medium mt-3 tracking-wide uppercase">
-                              {currentPage.author}
-                            </p>
-                          )}
-                        </div>
+                        <CoverPageContent page={currentPage} settings={settings} variant="editor" onNavigateAnchor={handleAnchorNavigation} />
                       ) : isBackCover ? (
                         <div className="h-full flex flex-col justify-between p-2 text-center">
                           <div className="text-[9px] uppercase tracking-widest text-stone-400">
@@ -1763,7 +1761,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                 })()}
 
                 {/* Subtle Overlap warning directly inside the physical card */}
-                {isPhysicalOverflow && isInternal && (
+                {isPhysicalOverflow && (isInternal || isCover) && (
                   <div className="absolute bottom-1 inset-x-2 bg-rose-50/95 border border-rose-300 rounded px-2 py-0.5 text-[7.5px] text-rose-900 flex items-center justify-between shadow-xs z-20 backdrop-blur-xs">
                     <span className="font-semibold flex items-center gap-1">
                       ⚠️ Texto excede margem A7
