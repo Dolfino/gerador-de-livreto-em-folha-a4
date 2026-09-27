@@ -58,6 +58,7 @@ interface TextPreparationViewProps {
   onLoadTest16PBooklet: () => void;
   onLoadMarkdownLinksSample?: () => void;
   onLoadBulletJournal?: () => void;
+  onLoadImageTestBooklet?: () => void;
   onGoToPages: () => void;
 }
 
@@ -84,6 +85,7 @@ export const TextPreparationView: React.FC<TextPreparationViewProps> = ({
   onLoadTest16PBooklet,
   onLoadMarkdownLinksSample,
   onLoadBulletJournal,
+  onLoadImageTestBooklet,
   onGoToPages,
 }) => {
   const [isSummarizing, setIsSummarizing] = useState(false);
@@ -252,6 +254,17 @@ export const TextPreparationView: React.FC<TextPreparationViewProps> = ({
               </>
             ) : (
               <>
+                {onLoadImageTestBooklet && (
+                  <button
+                    type="button"
+                    onClick={onLoadImageTestBooklet}
+                    className="px-3 py-1.5 text-xs text-teal-900 bg-teal-50 hover:bg-teal-100 border border-teal-300 rounded font-semibold transition-colors whitespace-nowrap shadow-2xs cursor-pointer flex items-center gap-1.5"
+                    title="Carregar álbum de teste com os 4 formatos físicos de imagem no A7"
+                  >
+                    <ImageIcon className="w-3.5 h-3.5 text-teal-700" />
+                    <span>Álbum A7 Fotos</span>
+                  </button>
+                )}
                 {onLoadBulletJournal && (
                   <button
                     type="button"

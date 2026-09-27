@@ -629,9 +629,6 @@ export default function App() {
       <Header
         onDownloadPDF={handleDownloadPDF}
         onPrint={handleOpenPrintModal}
-        onLoadTestBooklet={handleLoadTestBooklet}
-        onLoadImageTestBooklet={handleLoadImageTestBooklet}
-        onLoadBulletJournal={handleLoadBulletJournal}
         onOpenGuide={() => setIsGuideOpen(true)}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -706,6 +703,7 @@ export default function App() {
             onLoadTest16PBooklet={handleLoadTest16PBooklet}
             onLoadMarkdownLinksSample={handleLoadMarkdownLinksSample}
             onLoadBulletJournal={handleLoadBulletJournal}
+            onLoadImageTestBooklet={handleLoadImageTestBooklet}
             onGoToPages={() => {
               handleDistribute();
               setActiveTab('pages');

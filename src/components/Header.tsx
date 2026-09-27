@@ -1,13 +1,10 @@
 import React from 'react';
-import { Printer, Download, Sparkles, HelpCircle, BookOpen, Image as ImageIcon, CheckSquare } from 'lucide-react';
+import { Printer, Download, HelpCircle } from 'lucide-react';
 import { OutputMode } from '../types';
 
 interface HeaderProps {
   onDownloadPDF: () => void;
   onPrint: () => void;
-  onLoadTestBooklet: () => void;
-  onLoadImageTestBooklet?: () => void;
-  onLoadBulletJournal?: () => void;
   onOpenGuide: () => void;
   activeTab: 'edit' | 'pages' | 'sheet' | 'reader';
   setActiveTab: (tab: 'edit' | 'pages' | 'sheet' | 'reader') => void;
@@ -18,9 +15,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   onDownloadPDF,
   onPrint,
-  onLoadTestBooklet,
-  onLoadImageTestBooklet,
-  onLoadBulletJournal,
   onOpenGuide,
   activeTab,
   setActiveTab,
@@ -108,40 +102,6 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 3: Actions */}
         <div className="flex items-center gap-2">
-          {onLoadImageTestBooklet && (
-            <button
-              type="button"
-              onClick={onLoadImageTestBooklet}
-              className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 text-xs text-teal-900 bg-teal-50/90 hover:bg-teal-100 border border-teal-300 rounded font-medium transition-colors shadow-2xs cursor-pointer"
-              title="Carregar álbum de teste com os 4 formatos físicos de imagem no A7 (Sangria total, meia folha, 2 e 4 poses)"
-            >
-              <ImageIcon className="w-3.5 h-3.5 text-teal-700" />
-              <span>Álbum A7 Fotos</span>
-            </button>
-          )}
-
-          {onLoadBulletJournal && (
-            <button
-              type="button"
-              onClick={onLoadBulletJournal}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-indigo-950 bg-indigo-50/90 hover:bg-indigo-100 border border-indigo-300 rounded font-medium transition-colors shadow-2xs cursor-pointer"
-              title="Carregar modelo de Bullet Journal para a folha A4 (Índice, Legenda em 2 colunas, Metas, Logs Diários, Hábitos e Finanças)"
-            >
-              <CheckSquare className="w-3.5 h-3.5 text-indigo-700" />
-              <span className="hidden sm:inline font-semibold">Bullet Journal</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={onLoadTestBooklet}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs text-amber-900 bg-amber-50/90 hover:bg-amber-100 border border-amber-300 rounded font-medium transition-colors shadow-2xs cursor-pointer"
-            title="Carregar exemplar com instruções de montagem impressas em cada painel"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-            <span>Exemplar de Teste</span>
-          </button>
-
           <button
             type="button"
             onClick={onOpenGuide}
