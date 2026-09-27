@@ -25,6 +25,7 @@ import {
   Quote,
   QrCode,
   Smartphone,
+  CheckSquare,
 } from 'lucide-react';
 import { extractIntelligentSummary, suggestOptimalTypography, getPageCapacity } from '../utils/textDistributor';
 import { PosterEditor } from './PosterEditor';
@@ -54,6 +55,7 @@ interface TextPreparationViewProps {
   onLoadTestBooklet: () => void;
   onLoadTest16PBooklet: () => void;
   onLoadMarkdownLinksSample?: () => void;
+  onLoadBulletJournal?: () => void;
   onGoToPages: () => void;
 }
 
@@ -79,6 +81,7 @@ export const TextPreparationView: React.FC<TextPreparationViewProps> = ({
   onLoadTestBooklet,
   onLoadTest16PBooklet,
   onLoadMarkdownLinksSample,
+  onLoadBulletJournal,
   onGoToPages,
 }) => {
   const [isSummarizing, setIsSummarizing] = useState(false);
@@ -247,6 +250,17 @@ export const TextPreparationView: React.FC<TextPreparationViewProps> = ({
               </>
             ) : (
               <>
+                {onLoadBulletJournal && (
+                  <button
+                    type="button"
+                    onClick={onLoadBulletJournal}
+                    className="px-3 py-1.5 text-xs text-indigo-950 bg-indigo-50 hover:bg-indigo-100 border border-indigo-300 rounded font-semibold transition-colors whitespace-nowrap shadow-2xs cursor-pointer flex items-center gap-1.5"
+                    title="Carregar modelo completo de Bullet Journal (Índice, Legenda em 2 colunas, Metas, Logs Diários, Rastreador de Hábitos e Finanças)"
+                  >
+                    <CheckSquare className="w-3.5 h-3.5 text-indigo-700" />
+                    <span>Modelo Bullet Journal</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={onLoadTestBooklet}

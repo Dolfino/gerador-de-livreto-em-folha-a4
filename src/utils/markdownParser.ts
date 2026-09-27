@@ -28,6 +28,12 @@ export interface MarkdownSpan {
   highlight?: boolean; // ==destacado==, <mark>, <span style="background-color: ...">
   strikethrough?: boolean; // ~~riscado~~
   underline?: boolean; // <u>sublinhado</u>
+  fontSizeScale?: number; // <small> (0.82), <big> (1.25)
+}
+
+export interface TableCell {
+  text: string;
+  spans: MarkdownSpan[];
 }
 
 export interface ParsedLine {
@@ -47,6 +53,10 @@ export interface ParsedLine {
   qrSize?: 'sm' | 'md' | 'lg'; // 16mm, 20mm, 25mm
   anchorId?: string; // Slugified ID for internal anchors (#contact -> contact)
   spans: MarkdownSpan[];
+  isTableRow?: boolean;
+  isTableHeader?: boolean;
+  isDivider?: boolean;
+  tableCells?: TableCell[];
 }
 
 export interface MarkdownDocumentResult {
@@ -344,6 +354,7 @@ function applyFormatSpans(
       highlight: s.highlight || flags.highlight,
       strikethrough: s.strikethrough || flags.strikethrough,
       underline: s.underline || flags.underline,
+      fontSizeScale: flags.fontSizeScale || s.fontSizeScale,
     }));
   }
   return [
@@ -392,8 +403,12 @@ export function tokenizeMarkdownLine(
   const htmlMarkRegex = /^<mark(?:\s+[^>]*)?>([\s\S]*?)<\/mark>/i;
   // 7. HTML <u>: <u>texto sublinhado</u>
   const htmlUnderlineRegex = /^<u(?:\s+[^>]*)?>([\s\S]*?)<\/u>/i;
-  // 8. HTML <span style="background-color: ...">: <span style="...">fundo</span>
-  const htmlSpanBgRegex = /^<span\s+style="[^"]*background(?:-color)?:\s*[^;"]+[^"]*"[^>]*>([\s\S]*?)<\/span>/i;
+  // 7b. HTML <small>: <small>texto menor</small>
+  const htmlSmallRegex = /^<small(?:\s+[^>]*)?>([\s\S]*?)<\/small>/i;
+  // 7c. HTML <big>: <big>texto maior</big>
+  const htmlBigRegex = /^<big(?:\s+[^>]*)?>([\s\S]*?)<\/big>/i;
+  // 8. HTML <span style="...">: font-size, background-color, etc.
+  const htmlSpanRegex = /^<span\s+style="([^"]*)"[^>]*>([\s\S]*?)<\/span>/i;
   // 9. Code: `code`
   const codeRegex = /^`([^`]+)`/;
   // 10. Bold & Italic: ***bold italic*** or ___bold italic___
@@ -544,8 +559,32 @@ export function tokenizeMarkdownLine(
     } else if ((match = remaining.match(htmlUnderlineRegex))) {
       spans.push(...applyFormatSpans(match[1], { underline: true }, refMap));
       remaining = remaining.slice(match[0].length);
-    } else if ((match = remaining.match(htmlSpanBgRegex))) {
-      spans.push(...applyFormatSpans(match[1], { highlight: true }, refMap));
+    } else if ((match = remaining.match(htmlSmallRegex))) {
+      spans.push(...applyFormatSpans(match[1], { fontSizeScale: 0.82 }, refMap));
+      remaining = remaining.slice(match[0].length);
+    } else if ((match = remaining.match(htmlBigRegex))) {
+      spans.push(...applyFormatSpans(match[1], { fontSizeScale: 1.25 }, refMap));
+      remaining = remaining.slice(match[0].length);
+    } else if ((match = remaining.match(htmlSpanRegex))) {
+      const styleStr = match[1].toLowerCase();
+      const inner = match[2];
+      const highlight = /background(?:-color)?:\s*[^;"]+/.test(styleStr);
+      let fontSizeScale: number | undefined = undefined;
+      const fsMatch = styleStr.match(/font-size:\s*([^;"]+)/);
+      if (fsMatch) {
+        const val = fsMatch[1].trim();
+        if (val.endsWith('%')) {
+          const num = parseFloat(val);
+          if (!isNaN(num)) fontSizeScale = num / 100;
+        } else if (val.endsWith('em') || val.endsWith('rem')) {
+          const num = parseFloat(val);
+          if (!isNaN(num)) fontSizeScale = num;
+        } else if (val.endsWith('pt') || val.endsWith('px')) {
+          const num = parseFloat(val);
+          if (!isNaN(num)) fontSizeScale = num / 10;
+        }
+      }
+      spans.push(...applyFormatSpans(inner, { highlight, fontSizeScale }, refMap));
       remaining = remaining.slice(match[0].length);
     } else if ((match = remaining.match(codeRegex))) {
       spans.push({ type: 'code', text: match[1] });
@@ -703,6 +742,64 @@ export function parseMarkdownText(
         ],
       });
       continue;
+    }
+
+    // Check horizontal rule / divider: ---, ***, ___
+    if (/^\s*(-{3,}|\*{3,}|_{3,})\s*$/.test(trimmed)) {
+      result.push({
+        text: '',
+        raw: line,
+        isHeading1: false,
+        isHeading2: false,
+        isHeading3: false,
+        isBullet: false,
+        isBold: false,
+        isItalic: false,
+        isDivider: true,
+        spans: [],
+      });
+      continue;
+    }
+
+    // Check table separator line: |---|---| or |:---|:---|
+    if (/^\s*\|?\s*:?-{2,}:?\s*\|(?:\s*:?-{2,}:?\s*\|?)*\s*$/.test(trimmed)) {
+      // Mark previous table row as header
+      for (let i = result.length - 1; i >= 0; i--) {
+        if (result[i].isTableRow) {
+          result[i].isTableHeader = true;
+          break;
+        }
+        if (result[i].text || result[i].raw) break;
+      }
+      continue;
+    }
+
+    // Check table content row: | cell1 | cell2 | ...
+    if (trimmed.startsWith('|') && trimmed.endsWith('|') && trimmed.length > 2) {
+      const rawSegments = trimmed.slice(1, -1).split('|');
+      if (rawSegments.length >= 2) {
+        const tableCells = rawSegments.map((segment) => {
+          const cellText = segment.trim();
+          const cellSpans = tokenizeMarkdownLine(cellText, combinedRefMap);
+          const cleanText = cellSpans.map((s) => s.text).join('');
+          return { text: cleanText, spans: cellSpans };
+        });
+
+        result.push({
+          text: tableCells.map((c) => c.text).join(' | '),
+          raw: line,
+          isHeading1: false,
+          isHeading2: false,
+          isHeading3: false,
+          isBullet: false,
+          isBold: false,
+          isItalic: false,
+          isTableRow: true,
+          tableCells,
+          spans: [],
+        });
+        continue;
+      }
     }
 
     let isHeading1 = false;

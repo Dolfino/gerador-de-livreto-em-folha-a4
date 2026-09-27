@@ -16,6 +16,7 @@ import {
 import { parseMarkdownText } from '../utils/pdfGenerator';
 import { getHeaderFooterContent } from '../utils/headerFooterHelper';
 import { MarkdownContent } from './MarkdownContent';
+import { getPageFontSizePt } from '../utils/textDistributor';
 import { slugify } from '../utils/markdownParser';
 import { PageImageRenderer } from './PageImageRenderer';
 import { resolvePageImages } from '../utils/imageHelper';
@@ -627,6 +628,11 @@ const PageBookFace: React.FC<{
 
   const hf = getHeaderFooterContent(page, totalPages, settings, bookTitle, bookAuthor);
   const pageImages = resolvePageImages(page);
+  const pageFontSizePt = getPageFontSizePt(page, settings);
+  const textStyle: React.CSSProperties = {
+    fontSize: `${pageFontSizePt}pt`,
+    lineHeight: settings.lineHeight === 'relaxed' ? 1.55 : 1.35,
+  };
 
   if (pageImages.hasImages && pageImages.layout === 'full') {
     return (
@@ -671,7 +677,7 @@ const PageBookFace: React.FC<{
             </div>
             {/* Bottom Half: 50% de texto com margem editorial e rodapé */}
             <div className="w-full h-1/2 p-3 md:p-5 flex flex-col justify-between overflow-hidden shrink-0 bg-[#FCFCFA]">
-              <div className="space-y-1 md:space-y-1.5 text-xs md:text-sm leading-relaxed overflow-hidden">
+              <div style={textStyle} className="space-y-1 md:space-y-1.5 leading-relaxed overflow-hidden">
                 {page.title && (
                   <h4 className="font-bold text-sm md:text-base font-serif text-stone-900 mb-0.5 border-b border-stone-100 pb-0.5 shrink-0 truncate">
                     {page.title}
@@ -713,7 +719,7 @@ const PageBookFace: React.FC<{
                 </div>
               ) : null}
 
-              <div className="space-y-1 md:space-y-1.5 text-xs md:text-sm leading-relaxed overflow-hidden my-auto">
+              <div style={textStyle} className="space-y-1 md:space-y-1.5 leading-relaxed overflow-hidden my-auto">
                 {page.title && (
                   <h4 className="font-bold text-sm md:text-base font-serif text-stone-900 mb-0.5 border-b border-stone-100 pb-0.5 shrink-0 truncate">
                     {page.title}
@@ -809,7 +815,7 @@ const PageBookFace: React.FC<{
             )}
           </div>
         ) : (
-          <div className="space-y-2 text-xs md:text-sm leading-relaxed flex-1 flex flex-col">
+          <div style={textStyle} className="space-y-2 leading-relaxed flex-1 flex flex-col">
             {page.title && (
               <h4 className="font-bold text-sm md:text-base font-serif text-stone-900 mb-1 border-b border-stone-100 pb-1 shrink-0">
                 {page.title}

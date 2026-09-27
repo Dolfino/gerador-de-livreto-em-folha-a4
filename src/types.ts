@@ -30,6 +30,27 @@ export type PageLayoutMode = 'text' | 'art-full' | 'split-quote';
 
 export type PageImageLayout = 'none' | 'full' | 'half' | 'two' | 'four';
 
+export type PageFontSize =
+  | 'inherit'
+  | '6.5pt'
+  | '7pt'
+  | '7.5pt'
+  | '8pt'
+  | '8.5pt'
+  | '9pt'
+  | '9.5pt'
+  | '10pt'
+  | '10.5pt'
+  | '11pt'
+  | '11.5pt'
+  | '12pt'
+  | 'xs'
+  | 'sm'
+  | 'md'
+  | 'lg'
+  | (string & {})
+  | number;
+
 export interface PageDocument {
   id: number; // 1 to 16
   stableId: string;
@@ -44,6 +65,7 @@ export interface PageDocument {
   backgroundImage?: string;
   customHeader?: string;
   customFooter?: string;
+  fontSize?: PageFontSize; // Custom individual page font size override
 
   // Image Layout Fields (A7 Panel 74.25 x 105 mm)
   imageLayout?: PageImageLayout; // 'none' | 'full' (sangria total) | 'half' (meia folha) | 'two' (2 poses) | 'four' (4 poses)

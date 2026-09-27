@@ -25,6 +25,8 @@ import {
   TEST_BOOKLET_PAGES,
   TEST_BOOKLET_16P,
   TEST_BOOKLET_WITH_IMAGES,
+  BULLET_JOURNAL_PAGES,
+  BULLET_JOURNAL_SAMPLE_TEXT,
   LITERARY_SAMPLE_TEXT,
   LITERARY_SAMPLE_16P,
   MARKDOWN_LINKS_SAMPLE_TEXT,
@@ -578,6 +580,24 @@ export default function App() {
     setActiveTab('pages');
   };
 
+  // Load Bullet Journal Booklet (Modelo BuJo A4)
+  const handleLoadBulletJournal = () => {
+    setSettings((s) => ({
+      ...s,
+      outputMode: 'front-only',
+      fontSize: 'sm',
+      fontFamily: 'sans',
+    }));
+    setPages(BULLET_JOURNAL_PAGES);
+    setTitle('BULLET JOURNAL');
+    setSubtitle('Pocket Minilivro 8P · Foco & Produtividade');
+    setAuthor('Planejamento Pessoal');
+    setBackCoverText('Minilivro 8P · Método Bullet Journal');
+    setRawText(BULLET_JOURNAL_SAMPLE_TEXT);
+    setVolumes(null);
+    setActiveTab('pages');
+  };
+
   // Download PDF
   const handleDownloadPDF = async () => {
     const doc = await generateMinibookPDF(activePages, settings, {
@@ -611,6 +631,7 @@ export default function App() {
         onPrint={handleOpenPrintModal}
         onLoadTestBooklet={handleLoadTestBooklet}
         onLoadImageTestBooklet={handleLoadImageTestBooklet}
+        onLoadBulletJournal={handleLoadBulletJournal}
         onOpenGuide={() => setIsGuideOpen(true)}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -684,6 +705,7 @@ export default function App() {
             onLoadTestBooklet={handleLoadTestBooklet}
             onLoadTest16PBooklet={handleLoadTest16PBooklet}
             onLoadMarkdownLinksSample={handleLoadMarkdownLinksSample}
+            onLoadBulletJournal={handleLoadBulletJournal}
             onGoToPages={() => {
               handleDistribute();
               setActiveTab('pages');

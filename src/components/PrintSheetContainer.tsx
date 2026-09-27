@@ -5,6 +5,7 @@ import { getHeaderFooterContent } from '../utils/headerFooterHelper';
 import { MarkdownContent } from './MarkdownContent';
 import { PageImageRenderer } from './PageImageRenderer';
 import { resolvePageImages } from '../utils/imageHelper';
+import { getPageFontSizePt } from '../utils/textDistributor';
 import { Scissors } from 'lucide-react';
 
 interface PrintSheetContainerProps {
@@ -342,6 +343,11 @@ const PrintPanelContent: React.FC<{
 
   const hf = getHeaderFooterContent(page, totalPages, settings, bookTitle, bookAuthor);
   const pageImages = resolvePageImages(page);
+  const pageFontSizePt = getPageFontSizePt(page, settings);
+  const textStyle: React.CSSProperties = {
+    fontSize: `${pageFontSizePt}pt`,
+    lineHeight: settings.lineHeight === 'relaxed' ? 1.55 : 1.35,
+  };
 
   if (pageImages.hasImages && pageImages.layout === 'full') {
     return (
@@ -371,7 +377,7 @@ const PrintPanelContent: React.FC<{
               />
             </div>
             <div className="w-full h-1/2 p-2.5 flex flex-col justify-between overflow-hidden shrink-0 bg-white">
-              <div className="space-y-1 text-[8.5pt] text-stone-800 leading-snug">
+              <div style={textStyle} className="space-y-1 text-stone-800 leading-snug">
                 {page.title && (
                   <h2 className="font-bold text-[9.5pt] font-serif text-stone-900 mb-0.5 pb-0.5 border-b border-stone-100 shrink-0 truncate">
                     {page.title}
@@ -406,7 +412,7 @@ const PrintPanelContent: React.FC<{
                   <span className="font-mono text-right shrink-0">{hf.headerRight}</span>
                 </div>
               )}
-              <div className="space-y-1 text-[8.5pt] text-stone-800 leading-snug my-auto">
+              <div style={textStyle} className="space-y-1 text-stone-800 leading-snug my-auto">
                 {page.title && (
                   <h2 className="font-bold text-[9.5pt] font-serif text-stone-900 mb-0.5 pb-0.5 border-b border-stone-100 shrink-0 truncate">
                     {page.title}
@@ -479,7 +485,7 @@ const PrintPanelContent: React.FC<{
           <div className="h-full flex flex-col justify-between text-center p-2">
             <span className="text-[7pt] uppercase tracking-widest text-stone-400">Contracapa</span>
             {page.content?.trim() && (
-              <div className="text-[8.5pt] italic text-stone-700 leading-relaxed">
+              <div style={textStyle} className="italic text-stone-700 leading-relaxed">
                 <MarkdownContent content={page.content} textAlign="center" isPrint />
               </div>
             )}
@@ -490,7 +496,7 @@ const PrintPanelContent: React.FC<{
             )}
           </div>
         ) : (
-          <div className="flex-1 flex flex-col space-y-1 text-[8.5pt] text-stone-800 leading-snug">
+          <div style={textStyle} className="flex-1 flex flex-col space-y-1 text-stone-800 leading-snug">
             {page.title && (
               <h2 className="font-bold text-[9.5pt] font-serif text-stone-900 mb-0.5 pb-0.5 border-b border-stone-100 shrink-0 truncate">
                 {page.title}

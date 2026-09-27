@@ -8,7 +8,7 @@ Aplicação web para produzir um minilivro clássico de 8 páginas (zine) a part
 
 ### Pré-requisitos
 - **Node.js**: versão 18 ou superior
-- **npm** ou **pnpm** / **yarn**
+- **npm**
 
 ### Instalação e Execução
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Printer, Download, Sparkles, HelpCircle, BookOpen, Image as ImageIcon } from 'lucide-react';
+import { Printer, Download, Sparkles, HelpCircle, BookOpen, Image as ImageIcon, CheckSquare } from 'lucide-react';
 import { OutputMode } from '../types';
 
 interface HeaderProps {
@@ -7,6 +7,7 @@ interface HeaderProps {
   onPrint: () => void;
   onLoadTestBooklet: () => void;
   onLoadImageTestBooklet?: () => void;
+  onLoadBulletJournal?: () => void;
   onOpenGuide: () => void;
   activeTab: 'edit' | 'pages' | 'sheet' | 'reader';
   setActiveTab: (tab: 'edit' | 'pages' | 'sheet' | 'reader') => void;
@@ -19,6 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   onPrint,
   onLoadTestBooklet,
   onLoadImageTestBooklet,
+  onLoadBulletJournal,
   onOpenGuide,
   activeTab,
   setActiveTab,
@@ -115,6 +117,18 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <ImageIcon className="w-3.5 h-3.5 text-teal-700" />
               <span>Álbum A7 Fotos</span>
+            </button>
+          )}
+
+          {onLoadBulletJournal && (
+            <button
+              type="button"
+              onClick={onLoadBulletJournal}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-indigo-950 bg-indigo-50/90 hover:bg-indigo-100 border border-indigo-300 rounded font-medium transition-colors shadow-2xs cursor-pointer"
+              title="Carregar modelo de Bullet Journal para a folha A4 (Índice, Legenda em 2 colunas, Metas, Logs Diários, Hábitos e Finanças)"
+            >
+              <CheckSquare className="w-3.5 h-3.5 text-indigo-700" />
+              <span className="hidden sm:inline font-semibold">Bullet Journal</span>
             </button>
           )}
 

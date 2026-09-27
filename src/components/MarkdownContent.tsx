@@ -169,10 +169,16 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
         : ' bg-amber-200/85 text-amber-950 px-1 py-0.2 rounded-2xs shadow-2xs';
     }
 
+    let spanStyle: React.CSSProperties | undefined = undefined;
+    if (span.fontSizeScale && span.fontSizeScale !== 1) {
+      spanStyle = { fontSize: `${span.fontSizeScale}em` };
+    }
+
     if (span.type === 'code') {
       return (
         <code
           key={sIdx}
+          style={spanStyle}
           className={`font-mono bg-stone-100 text-stone-800 rounded px-1.5 py-0.5 text-[0.88em] ${
             isPrint ? 'border border-stone-200' : ''
           }${formatClasses}`}
@@ -185,6 +191,7 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
     return (
       <span
         key={sIdx}
+        style={spanStyle}
         className={formatClasses.trim()}
       >
         {span.text}
@@ -335,6 +342,75 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
         >
           {line.spans.map(renderSpan)}
         </blockquote>
+      );
+    }
+
+    if (line.isDivider) {
+      return (
+        <hr
+          key={idx}
+          className={`border-stone-200/80 ${compact ? 'my-1' : isPrint ? 'my-1.5' : 'my-2'}`}
+        />
+      );
+    }
+
+    if (line.isTableRow && line.tableCells && line.tableCells.length > 0) {
+      const isHeader = line.isTableHeader;
+      if (line.tableCells.length === 2) {
+        return (
+          <div
+            key={idx}
+            className={`grid grid-cols-2 gap-1.5 py-0.5 items-baseline ${
+              compact
+                ? 'text-[7.8px] leading-tight'
+                : isPrint
+                ? 'text-[8pt] leading-tight'
+                : 'text-[9.5px] md:text-[10.5px] leading-snug'
+            } ${
+              isHeader
+                ? 'font-bold border-b border-stone-200 text-stone-900 pb-0.5 mb-0.5'
+                : 'text-stone-800'
+            }`}
+          >
+            <div className="flex items-center gap-1 min-w-0 truncate">
+              {line.tableCells[0].spans.map(renderSpan)}
+            </div>
+            <div className="flex items-center gap-1 min-w-0 truncate">
+              {line.tableCells[1].spans.map(renderSpan)}
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <div
+          key={idx}
+          className={`grid gap-0.5 py-0.5 items-center text-stone-800 text-center ${
+            compact
+              ? 'text-[7.5px] leading-tight'
+              : isPrint
+              ? 'text-[8pt] leading-tight'
+              : 'text-[9.5px] leading-snug'
+          } ${
+            isHeader
+              ? 'font-bold border-b border-stone-200 text-stone-900 pb-0.5 mb-0.5'
+              : ''
+          }`}
+          style={{
+            gridTemplateColumns: `repeat(${line.tableCells.length}, minmax(0, 1fr))`,
+          }}
+        >
+          {line.tableCells.map((cell, cIdx) => (
+            <div
+              key={cIdx}
+              className={`px-0.5 min-w-0 overflow-hidden text-ellipsis ${
+                cIdx === 0 && line.tableCells && line.tableCells.length > 4 ? 'text-left font-medium' : 'text-center'
+              }`}
+            >
+              {cell.spans.map(renderSpan)}
+            </div>
+          ))}
+        </div>
       );
     }
 

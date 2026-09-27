@@ -19,15 +19,49 @@ export interface DynamicPageCapacity {
 }
 
 /**
+ * Resolves the effective font size in typographic points (pt) for a specific page,
+ * respecting individual page overrides or falling back to the book's global settings.
+ */
+export function getPageFontSizePt(
+  page?: PageDocument | null,
+  settings?: BookSettings | null
+): number {
+  if (page?.fontSize && page.fontSize !== 'inherit') {
+    if (typeof page.fontSize === 'number') return page.fontSize;
+    const str = String(page.fontSize).trim().toLowerCase();
+    if (str === 'xs') return 7.5;
+    if (str === 'sm') return 8.5;
+    if (str === 'md') return 10.0;
+    if (str === 'lg') return 11.5;
+    const match = str.match(/^([\d.]+)/);
+    if (match) {
+      const val = parseFloat(match[1]);
+      if (!isNaN(val) && val >= 5 && val <= 24) return val;
+    }
+  }
+
+  // Fallback to book's global setting
+  if (settings?.fontSize === 'sm') return 8.5;
+  if (settings?.fontSize === 'lg') return 11.5;
+  return 10.0;
+}
+
+/**
  * Calculates page capacity dynamically taking into account:
- * - Font size (sm, md, lg)
+ * - Font size (sm, md, lg, or individual page pt override)
  * - Line height (normal, relaxed)
  * - Margins (compact, standard, generous)
  * - Header/Footer active states: when the header or footer is inactive,
  *   the text area expands vertically to take advantage of the unused top/bottom margin.
  */
-export function getPageCapacity(settings: BookSettings): DynamicPageCapacity {
-  const base = FONT_CAPACITIES[settings.fontSize] || FONT_CAPACITIES.md;
+export function getPageCapacity(settings: BookSettings, page?: PageDocument): DynamicPageCapacity {
+  const effectivePt = getPageFontSizePt(page, settings);
+  const ptRatio = 10.0 / effectivePt;
+  const scaledWords = Math.round(145 * Math.pow(ptRatio, 1.2));
+  const scaledChars = Math.round(900 * Math.pow(ptRatio, 1.2));
+  const scaledMaxSafe = Math.round(165 * Math.pow(ptRatio, 1.2));
+
+  const base = { words: scaledWords, chars: scaledChars, maxSafeWords: scaledMaxSafe };
   let multiplier = 1.0;
 
   const hf = settings.headerFooter;

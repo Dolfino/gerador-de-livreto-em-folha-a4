@@ -486,3 +486,241 @@ Aponte a câmera do celular para abrir os arquivos diretamente do livreto físic
     dateOrPublisher: 'Coleção Fotográfica · 2026',
   },
 ];
+
+export const BULLET_JOURNAL_PAGES: PageDocument[] = [
+  {
+    id: 1,
+    stableId: 'p-1',
+    editorialNumber: 1,
+    role: 'cover',
+    title: 'BULLET JOURNAL',
+    subtitle: 'Pocket Minilivro 8P · Foco & Produtividade',
+    author: 'Planejamento Pessoal',
+    dateOrPublisher: 'Ciclo: ____/____ a ____/____',
+    content: `## MEU BULLET JOURNAL
+**Propósito:** _______________________________
+**Data de Início:** ___/___/2026
+
+> "Acompanhe o passado, organize o presente e planeje o futuro com clareza."
+
+▲ **Minilivro de Bolso em Folha A4 Única**
+Dobre em 8 páginas e leve seu foco no bolso para qualquer lugar, livre de distrações digitais.`,
+  },
+  {
+    id: 2,
+    stableId: 'p-2',
+    editorialNumber: 2,
+    role: 'content',
+    fontSize: '7.5pt',
+    title: 'Índice & Legenda',
+    content: `### 📑 ÍNDICE
+**p.3** Metas · **p.4-5** Diário · **p.6** Hábitos/$ · **p.7** Ideias · **p.8** Fim
+
+### 🗝️ LEGENDA (KEY)
+*Inicie simples; adapte conforme sua rotina evoluir:*
+
+| **□• Tarefa** (a fazer) | **○ Evento** (reunião/data) |
+| **[/] Andamento** (iniciada) | **— Nota** (ideia/fato) |
+| **[X] Concluída** (finalizada) | **\* Urgente** (crucial) |
+| **[>] Migrada** (p/ amanhã) | **! Inspiração** (sacada) |
+| **[<] Agendada** (Future Log) | **👁 Pesquisar** (buscar/ler) |
+| **[//] Cancelada** (nula) | **$ Finanças** (gastos/contas) |`,
+  },
+  {
+    id: 3,
+    stableId: 'p-3',
+    editorialNumber: 3,
+    role: 'content',
+    title: 'Página 3 · Metas & Log Futuro',
+    content: `### Metas & Future Log
+*Registre compromissos com ○ e agendamentos com <:*
+
+| **Datas & Compromissos** | **Prioridades do Ciclo** |
+| ○ ___/___ : _____________ | * [•] __________________ |
+| ○ ___/___ : _____________ | * [•] __________________ |
+| ○ ___/___ : _____________ | * [•] __________________ |
+| < Agendado: _____________ | [•] ____________________ |
+| < Agendado: _____________ | [•] ____________________ |
+
+---
+**Foco Principal da Semana:**
+- * [•] __________________________________
+- [•] ____________________________________`,
+  },
+  {
+    id: 4,
+    stableId: 'p-4',
+    editorialNumber: 4,
+    role: 'content',
+    title: 'Página 4 · Log Diário (1ª Parte)',
+    content: `### SEG | ___/___
+- [•] _______________________________
+- [/] _______________________________
+- ○ Reunião / Horário: ______________
+
+### TER | ___/___
+- * [•] _____________________________
+- [•] _______________________________
+- — Nota: ___________________________
+
+### QUA | ___/___
+- [•] _______________________________
+- 👁 Pesquisar: ______________________
+- ! Ideia: __________________________`,
+  },
+  {
+    id: 5,
+    stableId: 'p-5',
+    editorialNumber: 5,
+    role: 'content',
+    title: 'Página 5 · Log Diário (2ª Parte)',
+    content: `### QUI | ___/___
+- * [•] _____________________________
+- [•] _______________________________
+- $ Conta / Gasto: __________________
+
+### SEX | ___/___
+- [•] _______________________________
+- [•] _______________________________
+- ○ Alinhamento: ____________________
+
+### SÁB & DOM | ___/___
+- [•] Pendência pessoal: ____________
+- ○ Lazer / Aniversário: ____________
+- — Reflexão do fim de semana: ______`,
+  },
+  {
+    id: 6,
+    stableId: 'p-6',
+    editorialNumber: 6,
+    role: 'content',
+    fontSize: '7.5pt',
+    title: 'Página 6 · Hábitos & Finanças',
+    content: `### Rastreador de Hábitos
+*Marque [X] no dia cumprido:*
+| Hábito | S | T | Q | Q | S | S | D |
+| Leitura | □ | □ | □ | □ | □ | □ | □ |
+| Exercício | □ | □ | □ | □ | □ | □ | □ |
+| Água 2L | □ | □ | □ | □ | □ | □ | □ |
+| Sono 7h+ | □ | □ | □ | □ | □ | □ | □ |
+
+---
+### $ Controle Financeiro
+- $ Entrada / Receita: R$ ____________
+- $ Fixo (Contas a pagar): R$ _______
+- $ Variável / Gastos: R$ ___________
+- $ Saldo do Ciclo: R$ ______________`,
+  },
+  {
+    id: 7,
+    stableId: 'p-7',
+    editorialNumber: 7,
+    role: 'content',
+    title: 'Página 7 · Brain Dump & Ideias',
+    content: `### ! Inspiração & Ideias
+*Pensamentos criativos e sacadas repentinas:*
+- ! __________________________________
+- ! __________________________________
+- ! __________________________________
+
+---
+### 👁 Pesquisar & Aprofundar
+*Temas para buscar na internet, ler ou estudar:*
+- 👁 _________________________________
+- 👁 _________________________________
+- 👁 _________________________________
+
+---
+### — Notas & Fatos
+- — _________________________________
+- — _________________________________`,
+  },
+  {
+    id: 8,
+    stableId: 'p-8',
+    editorialNumber: 8,
+    role: 'back-cover',
+    title: 'CONTRACAPA · FECHAMENTO',
+    dateOrPublisher: 'Minilivro 8P · Método Bullet Journal',
+    content: `### 🏁 Balanço do Ciclo
+*Revise suas tarefas antes de arquivar:*
+
+- [X] Tarefas concluídas: ______
+- [>] Migradas p/ próximo livreto: ______
+- [<] Agendadas no Future Log: ______
+- [//] Descartadas / canceladas: ______
+
+---
+### 📝 Aprendizado & Vitória
+- **Maior conquista:** __________________
+- **Ajuste para a próxima:** ___________
+
+*Livreto arquivado em: ____/____/2026*`,
+  },
+];
+
+export const BULLET_JOURNAL_SAMPLE_TEXT = `# MEU BULLET JOURNAL
+
+### I. Índice & Legenda
+**p.3** Metas · **p.4-5** Diário · **p.6** Hábitos/$ · **p.7** Ideias · **p.8** Fim
+
+### Legenda de Símbolos
+| **□• Tarefa** (a fazer) | **○ Evento** (reunião/data) |
+| **[/] Andamento** (iniciada) | **— Nota** (ideia/fato) |
+| **[X] Concluída** (finalizada) | **\* Urgente** (crucial) |
+| **[>] Migrada** (p/ amanhã) | **! Inspiração** (sacada) |
+| **[<] Agendada** (Future Log) | **👁 Pesquisar** (buscar/ler) |
+| **[//] Cancelada** (nula) | **$ Finanças** (gastos/contas) |
+
+### II. Metas & Log Futuro
+| **Datas & Compromissos** | **Prioridades do Ciclo** |
+| ○ ___/___ : _____________ | * [•] __________________ |
+| ○ ___/___ : _____________ | * [•] __________________ |
+| < Agendado: _____________ | [•] ____________________ |
+
+---
+**Top Foco:**
+- * [•] Prioridade principal da semana
+
+### III. Log Diário (Seg a Qua)
+### SEG | ___/___
+- [•] Tarefa importante do dia
+- [/] Tarefa em andamento
+- ○ Reunião / Compromisso
+
+### TER & QUA
+- * [•] Atividade crítica urgente
+- — Nota ou observação rápida
+- 👁 Pesquisar tema na internet
+
+### IV. Log Diário (Qui a Dom)
+### QUI & SEX
+- [•] Revisão de projetos
+- $ Pagamento / Conta do mês
+- ○ Alinhamento de equipe
+
+### SÁB & DOM
+- [•] Lazer e descanso merecido
+- — Ideia criativa do fim de semana
+
+### V. Hábitos & Finanças
+| Hábito | S | T | Q | Q | S | S | D |
+| Leitura | □ | □ | □ | □ | □ | □ | □ |
+| Exercício | □ | □ | □ | □ | □ | □ | □ |
+| Água 2L | □ | □ | □ | □ | □ | □ | □ |
+
+---
+### $ Finanças
+- $ Entrada: R$ ___________
+- $ Gastos / Contas: R$ ___________
+- $ Saldo final: R$ ___________
+
+### VI. Brain Dump & Pesquisas
+### ! Ideias Repentinas
+- ! Sacada criativa para projetos
+- ! Inspiração de leitura ou escrita
+
+---
+### 👁 Pesquisas & Estudos
+- 👁 Artigo / livro para ler
+- 👁 Tema técnico para aprofundar`;

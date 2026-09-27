@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { BookSettings, PageDocument, OutputMode } from '../types';
 import { getHeaderFooterContent } from './headerFooterHelper';
+import { getPageFontSizePt } from './textDistributor';
 
 export interface PDFExportOptions {
   fileName?: string;
@@ -15,9 +16,26 @@ export {
   slugify,
   countMarkdownWords,
 } from './markdownParser';
-import { parseMarkdownText } from './markdownParser';
+import { parseMarkdownText, ParsedLine } from './markdownParser';
 import { generateQrDataUrlSync, ensureQrDataUrl } from './qrCodeHelper';
 import { resolvePageImages, ensureDataUrl } from './imageHelper';
+
+export function sanitizeForJsPdf(text: string): string {
+  if (!text) return '';
+  return text
+    .replace(/□/g, '[ ]')
+    .replace(/○/g, '( )')
+    .replace(/👁/g, '[Pesq]')
+    .replace(/📑/g, '')
+    .replace(/🗝️?/g, '')
+    .replace(/🎯/g, '')
+    .replace(/⚡/g, '')
+    .replace(/💡/g, '')
+    .replace(/🏁/g, '')
+    .replace(/📝/g, '')
+    .replace(/[\u{1F300}-\u{1FAFF}]/gu, '')
+    .trim();
+}
 
 /**
  * Generates the complete Minibook PDF according to the active OutputMode:
@@ -525,29 +543,36 @@ function renderPanel(
   let titlePt = 12;
   let lineHeightMm = 4.2;
 
-  if (settings.fontSize === 'sm') {
-    bodyPt = 8.5;
-    titlePt = 11;
-    lineHeightMm = 3.8;
-  } else if (settings.fontSize === 'lg') {
-    bodyPt = 11;
-    titlePt = 13.5;
-    lineHeightMm = 4.8;
-  }
+  if (page.fontSize && page.fontSize !== 'inherit') {
+    const customPt = getPageFontSizePt(page, settings);
+    bodyPt = customPt;
+    titlePt = Math.max(9, customPt + 2);
+    lineHeightMm = customPt * 0.42;
+  } else {
+    if (settings.fontSize === 'sm') {
+      bodyPt = 8.5;
+      titlePt = 11;
+      lineHeightMm = 3.8;
+    } else if (settings.fontSize === 'lg') {
+      bodyPt = 11;
+      titlePt = 13.5;
+      lineHeightMm = 4.8;
+    }
 
-  // Dynamic typography scale: only scale down if page is unusually dense (> 165 words)
-  const pageWords = (page.content || '').split(/\s+/).filter(Boolean).length;
-  if (pageWords > 185) {
-    bodyPt = Math.min(bodyPt, 7.8);
-    titlePt = Math.min(titlePt, 9.5);
-    lineHeightMm = 3.3;
-  } else if (pageWords > 165) {
-    bodyPt = Math.min(bodyPt, 8.4);
-    titlePt = Math.min(titlePt, 10);
-    lineHeightMm = 3.6;
-  } else if (pageWords > 145 && settings.fontSize !== 'sm') {
-    bodyPt = Math.min(bodyPt, 9.0);
-    lineHeightMm = 3.9;
+    // Dynamic typography scale: only scale down if page is unusually dense (> 165 words)
+    const pageWords = (page.content || '').split(/\s+/).filter(Boolean).length;
+    if (pageWords > 185) {
+      bodyPt = Math.min(bodyPt, 7.8);
+      titlePt = Math.min(titlePt, 9.5);
+      lineHeightMm = 3.3;
+    } else if (pageWords > 165) {
+      bodyPt = Math.min(bodyPt, 8.4);
+      titlePt = Math.min(titlePt, 10);
+      lineHeightMm = 3.6;
+    } else if (pageWords > 145 && settings.fontSize !== 'sm') {
+      bodyPt = Math.min(bodyPt, 9.0);
+      lineHeightMm = 3.9;
+    }
   }
 
   const mapPoint = (localX: number, localY: number): { x: number; y: number; angle: number } => {
@@ -785,7 +810,18 @@ function renderPanel(
         doc.setTextColor(60, 60, 60);
       }
 
-      const splitContent = doc.splitTextToSize(item.text, contentWidth);
+      if (item.isDivider) {
+        doc.setDrawColor(210, 210, 210);
+        doc.setLineWidth(0.2);
+        const pt1 = mapPoint(contentWidth * 0.15, currY);
+        const pt2 = mapPoint(contentWidth * 0.85, currY);
+        doc.line(pt1.x, pt1.y, pt2.x, pt2.y);
+        currY += lineHeightMm * 0.7;
+        continue;
+      }
+
+      const cleanText = sanitizeForJsPdf(item.text);
+      const splitContent = doc.splitTextToSize(cleanText, contentWidth);
       for (const line of splitContent) {
         if (currY >= maxY) break;
         const pt = mapPoint(contentWidth / 2, currY);
@@ -855,6 +891,62 @@ function renderPanel(
         continue;
       }
 
+      if (item.isDivider) {
+        doc.setDrawColor(210, 210, 210);
+        doc.setLineWidth(0.2);
+        const pt1 = mapPoint(0, currY);
+        const pt2 = mapPoint(contentWidth, currY);
+        doc.line(pt1.x, pt1.y, pt2.x, pt2.y);
+        currY += lineHeightMm * 0.7;
+        continue;
+      }
+
+      // Table row (2 columns or multi-columns)
+      if (item.isTableRow && item.tableCells && item.tableCells.length > 0) {
+        if (currY >= maxY) break;
+        const isHeader = !!item.isTableHeader;
+        doc.setFont(fontName, isHeader ? 'bold' : 'normal');
+
+        if (item.tableCells.length === 2) {
+          doc.setFontSize(isHeader ? bodyPt : bodyPt - 0.3);
+          doc.setTextColor(isHeader ? 20 : 45, isHeader ? 20 : 45, isHeader ? 20 : 45);
+
+          const colW = (contentWidth - 2) / 2;
+          const clean0 = sanitizeForJsPdf(item.tableCells[0].text);
+          const clean1 = sanitizeForJsPdf(item.tableCells[1].text);
+
+          const pt0 = mapPoint(0, currY);
+          const pt1 = mapPoint(colW + 2, currY);
+
+          doc.text(clean0, pt0.x, pt0.y, { angle: pt0.angle, align: 'left', maxWidth: colW });
+          doc.text(clean1, pt1.x, pt1.y, { angle: pt1.angle, align: 'left', maxWidth: colW });
+
+          currY += lineHeightMm * (isHeader ? 1.05 : 0.95);
+          continue;
+        }
+
+        // Multi-column table (e.g. Habit tracker)
+        const numCols = item.tableCells.length;
+        doc.setFontSize(bodyPt - 0.7);
+        doc.setTextColor(isHeader ? 20 : 45, isHeader ? 20 : 45, isHeader ? 20 : 45);
+        const cellW = contentWidth / numCols;
+
+        for (let cIdx = 0; cIdx < numCols; cIdx++) {
+          const clean = sanitizeForJsPdf(item.tableCells[cIdx].text);
+          const isFirstCol = cIdx === 0 && numCols > 4;
+          const xOffset = isFirstCol ? 0 : cIdx * cellW + cellW / 2;
+          const cellPt = mapPoint(xOffset, currY);
+          doc.text(clean, cellPt.x, cellPt.y, {
+            angle: cellPt.angle,
+            align: isFirstCol ? 'left' : 'center',
+            maxWidth: cellW,
+          });
+        }
+
+        currY += lineHeightMm * (isHeader ? 1.0 : 0.85);
+        continue;
+      }
+
       if (!item.text) {
         currY += lineHeightMm * 0.5;
         continue;
@@ -876,7 +968,8 @@ function renderPanel(
 
       const indent = item.isBullet ? 4 : item.isBlockquote ? 4 : 0;
       const availableWidth = contentWidth - indent;
-      const splitSubLines = doc.splitTextToSize(item.text, availableWidth);
+      const cleanLineText = sanitizeForJsPdf(item.text);
+      const splitSubLines = doc.splitTextToSize(cleanLineText, availableWidth);
 
       // Draw blockquote left border if blockquote item
       if (item.isBlockquote && splitSubLines.length > 0) {

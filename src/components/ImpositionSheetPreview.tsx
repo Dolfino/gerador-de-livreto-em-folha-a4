@@ -18,6 +18,7 @@ import { getHeaderFooterContent } from '../utils/headerFooterHelper';
 import { MarkdownContent } from './MarkdownContent';
 import { PageImageRenderer } from './PageImageRenderer';
 import { resolvePageImages } from '../utils/imageHelper';
+import { getPageFontSizePt } from '../utils/textDistributor';
 
 interface ImpositionSheetPreviewProps {
   pages: PageDocument[];
@@ -576,6 +577,12 @@ const ImpositionPanelCard: React.FC<{
 
   const hf = getHeaderFooterContent(page, totalPages, settings, bookTitle, bookAuthor);
   const pageImages = resolvePageImages(page);
+  const pageFontSizePt = getPageFontSizePt(page, settings);
+  const previewThumbnailSize = Math.max(6, Math.min(10.5, pageFontSizePt * 0.85));
+  const thumbTextStyle: React.CSSProperties = {
+    fontSize: `${previewThumbnailSize}px`,
+    lineHeight: settings.lineHeight === 'relaxed' ? 1.45 : 1.25,
+  };
 
   return (
     <div
@@ -631,7 +638,7 @@ const ImpositionPanelCard: React.FC<{
                   <PageImageRenderer layout="half" images={pageImages.images} compact />
                 </div>
                 <div className="w-full h-1/2 p-1.5 flex flex-col justify-between overflow-hidden bg-white text-[8px] leading-tight shrink-0">
-                  <div className="overflow-hidden">
+                  <div style={thumbTextStyle} className="overflow-hidden">
                     {page.title?.trim() && (
                       <h5 className="font-bold text-[9px] font-serif text-stone-900 mb-0.5 shrink-0 truncate">
                         {page.title}
@@ -657,7 +664,7 @@ const ImpositionPanelCard: React.FC<{
                       <span>{hf.headerRight}</span>
                     </div>
                   ) : null}
-                  <div className="overflow-hidden my-auto">
+                  <div style={thumbTextStyle} className="overflow-hidden my-auto">
                     {page.title?.trim() && (
                       <h5 className="font-bold text-[9px] font-serif text-stone-900 mb-0.5 shrink-0 truncate">
                         {page.title}
@@ -743,7 +750,7 @@ const ImpositionPanelCard: React.FC<{
                   )}
                 </div>
               ) : (
-                <div className="flex-1 flex flex-col">
+                <div style={thumbTextStyle} className="flex-1 flex flex-col">
                   {page.title?.trim() && (
                     <h5 className="font-bold text-[9px] font-serif text-stone-900 mb-0.5 shrink-0 truncate">
                       {page.title}
