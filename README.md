@@ -44,6 +44,7 @@ Aplicação web para produzir um minilivro clássico de 8 páginas (zine) a part
 2. **Revisar Páginas (1 a 8)**:
    - Inspecione e edite individualmente o conteúdo de cada página.
    - Na **Capa**, edite título, subtítulo, autor e **Texto adicional da capa**. O texto aparece nas prévias, na impressão e no PDF. O controle **Fonte** ajusta o tamanho do texto da capa em todas essas saídas. Apague o texto do modelo se quiser uma capa só com título.
+   - Na **Contracapa**, edite título, subtítulo, texto e data/editora. As mudanças aparecem nas prévias, na impressão e no PDF.
    - Mova trechos de texto facilmente com os botões rápidos de realocação de parágrafos.
    - Acompanhe o medidor visual de capacidade e palavras seguras por página.
 

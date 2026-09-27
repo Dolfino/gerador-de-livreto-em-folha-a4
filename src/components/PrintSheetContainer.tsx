@@ -8,6 +8,7 @@ import { resolvePageImages } from '../utils/imageHelper';
 import { getPageFontSizePt } from '../utils/textDistributor';
 import { Scissors } from 'lucide-react';
 import { CoverPageContent } from './CoverPageContent';
+import { BackCoverPageContent } from './BackCoverPageContent';
 
 interface PrintSheetContainerProps {
   pages: PageDocument[];
@@ -468,19 +469,7 @@ const PrintPanelContent: React.FC<{
         ) : isCover ? (
           <CoverPageContent page={page} settings={settings} variant="print" />
         ) : isBackCover ? (
-          <div className="h-full flex flex-col justify-between text-center p-2">
-            <span className="text-[7pt] uppercase tracking-widest text-stone-400">Contracapa</span>
-            {page.content?.trim() && (
-              <div style={textStyle} className="italic text-stone-700 leading-relaxed">
-                <MarkdownContent content={page.content} textAlign="center" isPrint />
-              </div>
-            )}
-            {page.dateOrPublisher?.trim() && (
-              <span className="text-[7pt] text-stone-400 font-mono">
-                {page.dateOrPublisher}
-              </span>
-            )}
-          </div>
+          <BackCoverPageContent page={page} settings={settings} variant="print" />
         ) : (
           <div style={textStyle} className="flex-1 flex flex-col space-y-1 text-stone-800 leading-snug">
             {page.title && (

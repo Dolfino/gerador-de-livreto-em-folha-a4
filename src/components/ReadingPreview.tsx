@@ -21,6 +21,7 @@ import { slugify } from '../utils/markdownParser';
 import { PageImageRenderer } from './PageImageRenderer';
 import { resolvePageImages } from '../utils/imageHelper';
 import { CoverPageContent } from './CoverPageContent';
+import { BackCoverPageContent } from './BackCoverPageContent';
 
 interface ReadingPreviewProps {
   pages: PageDocument[];
@@ -781,23 +782,7 @@ const PageBookFace: React.FC<{
         ) : isCover ? (
           <CoverPageContent page={page} settings={settings} variant="reading" onNavigateAnchor={onNavigateAnchor} />
         ) : isBackCover ? (
-          <div className="h-full flex flex-col justify-between p-2 text-center">
-            <div className="text-[10px] uppercase tracking-widest text-stone-400">Contracapa</div>
-            {page.content?.trim() && (
-              <div className="text-xs md:text-sm italic text-stone-700 leading-relaxed max-w-xs mx-auto">
-                <MarkdownContent
-                  content={page.content}
-                  textAlign="center"
-                  onNavigateAnchor={onNavigateAnchor}
-                />
-              </div>
-            )}
-            {page.dateOrPublisher?.trim() && (
-              <div className="text-[10px] text-stone-400 font-mono">
-                {page.dateOrPublisher}
-              </div>
-            )}
-          </div>
+          <BackCoverPageContent page={page} settings={settings} variant="reading" onNavigateAnchor={onNavigateAnchor} />
         ) : (
           <div style={textStyle} className="space-y-2 leading-relaxed flex-1 flex flex-col">
             {page.title && (

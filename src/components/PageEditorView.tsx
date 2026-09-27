@@ -44,6 +44,7 @@ import { resolvePageImages } from '../utils/imageHelper';
 import { countMarkdownWords, slugify } from '../utils/markdownParser';
 import { PageImageLayout } from '../types';
 import { CoverPageContent } from './CoverPageContent';
+import { BackCoverPageContent } from './BackCoverPageContent';
 
 interface PageEditorViewProps {
   pages: PageDocument[];
@@ -795,7 +796,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-stone-700 mb-1 flex items-center justify-between">
-                    <span>Título / Cabeçalho da Página</span>
+                    <span>{isBackCover ? 'Título da contracapa' : 'Título / Cabeçalho da Página'}</span>
                     {!isCover && (
                       <span className="text-[10px] text-stone-400 font-normal">
                         Opcional (pode deixar em branco)
@@ -806,7 +807,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                     type="text"
                     value={isCover ? (currentPage.title || '') : (/^P[áa]gina\s+\d+$/i.test((currentPage.title || '').trim()) ? '' : (currentPage.title || ''))}
                     onChange={(e) => onUpdatePage(currentPage.id, { title: e.target.value })}
-                    placeholder={isCover ? 'Título da Obra' : 'Em branco (opcional)'}
+                    placeholder={isCover ? 'Título da Obra' : isBackCover ? 'Contracapa (opcional)' : 'Em branco (opcional)'}
                     className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded focus:ring-1 focus:ring-stone-900 focus:border-stone-900"
                   />
                 </div>
@@ -827,7 +828,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                 ) : (
                   <div>
                     <label className="block text-xs font-semibold text-stone-700 mb-1">
-                      Subtítulo ou Intertítulo (Opcional)
+                      {isBackCover ? 'Subtítulo da contracapa (opcional)' : 'Subtítulo ou Intertítulo (Opcional)'}
                     </label>
                     <input
                       type="text"
@@ -851,6 +852,22 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                     value={currentPage.author || ''}
                     onChange={(e) => onUpdatePage(currentPage.id, { author: e.target.value })}
                     placeholder="Nome ou assinatura (opcional)"
+                    className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded focus:ring-1 focus:ring-stone-900 focus:border-stone-900"
+                  />
+                </div>
+              )}
+
+              {isBackCover && (
+                <div>
+                  <label htmlFor="back-cover-publisher" className="block text-xs font-semibold text-stone-700 mb-1">
+                    Data ou Editora (Opcional)
+                  </label>
+                  <input
+                    id="back-cover-publisher"
+                    type="text"
+                    value={currentPage.dateOrPublisher || ''}
+                    onChange={(e) => onUpdatePage(currentPage.id, { dateOrPublisher: e.target.value })}
+                    placeholder="Ex.: Edição independente · 2026"
                     className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded focus:ring-1 focus:ring-stone-900 focus:border-stone-900"
                   />
                 </div>
@@ -891,7 +908,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                 {/* Linha 1: Título da Seção e Badges de Status / Capacidade */}
                 <div className="flex items-center justify-between pb-1.5 flex-wrap gap-2">
                   <label className="text-xs font-semibold text-stone-800 flex items-center gap-1.5">
-                    <span>{isCover ? 'Texto adicional da capa' : 'Conteúdo da Página'}</span>
+                    <span>{isCover ? 'Texto adicional da capa' : isBackCover ? 'Texto da contracapa' : 'Conteúdo da Página'}</span>
                     {isInternal && (
                       <span className="text-[11px] text-stone-400 font-normal hidden sm:inline">
                         (Selecione um trecho para movê-lo)
@@ -1143,7 +1160,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                 </p>
                 <textarea
                   ref={textareaRef}
-                  aria-label={isCover ? 'Texto adicional da capa' : 'Conteúdo da Página'}
+                  aria-label={isCover ? 'Texto adicional da capa' : isBackCover ? 'Texto da contracapa' : 'Conteúdo da Página'}
                   aria-describedby="page-spacing-hint"
                   rows={8}
                   value={currentPage.content || ''}
@@ -1154,6 +1171,8 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                   onMouseUp={handleSelectionChange}
                   placeholder={isCover
                     ? 'Escreva o texto que deve aparecer abaixo do subtítulo. Deixe vazio para uma capa simples.'
+                    : isBackCover
+                    ? 'Escreva a sinopse, frase final ou créditos da contracapa.'
                     : 'Escreva ou edite o conteúdo desta página... Dica: selecione qualquer trecho com o mouse para enviá-lo diretamente para a próxima página.'}
                   style={{
                     tabSize: TAB_SIZE,
@@ -1677,25 +1696,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                       ) : isCover ? (
                         <CoverPageContent page={currentPage} settings={settings} variant="editor" onNavigateAnchor={handleAnchorNavigation} />
                       ) : isBackCover ? (
-                        <div className="h-full flex flex-col justify-between p-2 text-center">
-                          <div className="text-[9px] uppercase tracking-widest text-stone-400">
-                            Contracapa
-                          </div>
-                          {currentPage.content?.trim() && (
-                            <div className="text-[10.5px] italic text-stone-700 leading-relaxed">
-                              <MarkdownContent
-                                content={currentPage.content}
-                                textAlign="center"
-                                onNavigateAnchor={handleAnchorNavigation}
-                              />
-                            </div>
-                          )}
-                          {currentPage.dateOrPublisher?.trim() && (
-                            <div className="text-[9px] text-stone-400 font-mono">
-                              {currentPage.dateOrPublisher}
-                            </div>
-                          )}
-                        </div>
+                        <BackCoverPageContent page={currentPage} settings={settings} variant="editor" onNavigateAnchor={handleAnchorNavigation} />
                       ) : (
                         <div
                           style={previewFontSizeStyle}
@@ -1761,7 +1762,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                 })()}
 
                 {/* Subtle Overlap warning directly inside the physical card */}
-                {isPhysicalOverflow && (isInternal || isCover) && (
+                {isPhysicalOverflow && (isInternal || isCover || isBackCover) && (
                   <div className="absolute bottom-1 inset-x-2 bg-rose-50/95 border border-rose-300 rounded px-2 py-0.5 text-[7.5px] text-rose-900 flex items-center justify-between shadow-xs z-20 backdrop-blur-xs">
                     <span className="font-semibold flex items-center gap-1">
                       ⚠️ Texto excede margem A7
