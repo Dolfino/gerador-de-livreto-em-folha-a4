@@ -17,7 +17,7 @@ export {
   slugify,
   countMarkdownWords,
 } from './markdownParser';
-import { parseMarkdownText, ParsedLine } from './markdownParser';
+import { parseMarkdownText, type MarkdownSpan, type ParsedLine } from './markdownParser';
 import { generateQrDataUrlSync, ensureQrDataUrl } from './qrCodeHelper';
 import { resolvePageImages, ensureDataUrl } from './imageHelper';
 
@@ -519,6 +519,164 @@ function renderQrCodeBlock(
   return currY;
 }
 
+interface PdfTextRun {
+  text: string;
+  width: number;
+  fontName: string;
+  fontStyle: string;
+  fontSize: number;
+  span: MarkdownSpan;
+}
+
+interface PdfTextLine {
+  runs: PdfTextRun[];
+  width: number;
+  maxFontSize: number;
+}
+
+function hasInlineFontSize(spans: MarkdownSpan[]): boolean {
+  return spans.some((span) => span.fontSizeScale !== undefined && span.fontSizeScale !== 1);
+}
+
+// Measure each formatted fragment with its own font before deciding where to wrap.
+function layoutPdfSpans(
+  doc: jsPDF,
+  spans: MarkdownSpan[],
+  maxWidth: number,
+  fontName: string,
+  baseStyle: string,
+  baseFontSize: number
+): PdfTextLine[] {
+  const lines: PdfTextLine[] = [];
+  let line: PdfTextLine = { runs: [], width: 0, maxFontSize: baseFontSize };
+  const finishLine = () => {
+    lines.push(line);
+    line = { runs: [], width: 0, maxFontSize: baseFontSize };
+  };
+
+  for (const span of spans) {
+    const text = sanitizeForJsPdf(span.text);
+    if (!text) continue;
+    const spanFont = span.type === 'code' ? 'courier' : fontName;
+    const bold = baseStyle.includes('bold') || !!span.bold;
+    const italic = baseStyle.includes('italic') || !!span.italic;
+    const fontStyle = bold && italic ? 'bolditalic' : bold ? 'bold' : italic ? 'italic' : 'normal';
+    const fontSize = baseFontSize * (span.fontSizeScale ?? (span.type === 'code' ? 0.88 : 1));
+    doc.setFont(spanFont, fontStyle);
+    doc.setFontSize(fontSize);
+
+    const append = (part: string) => {
+      const width = doc.getTextWidth(part);
+      line.runs.push({ text: part, width, fontName: spanFont, fontStyle, fontSize, span });
+      line.width += width;
+      line.maxFontSize = Math.max(line.maxFontSize, fontSize);
+    };
+
+    for (const token of text.match(/\S+|\s+/g) ?? []) {
+      let rest = token;
+      while (rest) {
+        const width = doc.getTextWidth(rest);
+        if (line.width + width <= maxWidth) {
+          append(rest);
+          break;
+        }
+
+        // A word goes to the next line as a unit when possible.
+        if (line.runs.length > 0 && !/^\s+$/.test(rest)) {
+          finishLine();
+          continue;
+        }
+
+        // Split a long word or an unusually wide run of spaces at the panel edge.
+        let fit = 0;
+        while (fit < rest.length && line.width + doc.getTextWidth(rest.slice(0, fit + 1)) <= maxWidth) {
+          fit++;
+        }
+        if (fit === 0) {
+          if (line.runs.length) {
+            finishLine();
+          } else {
+            append(rest[0]);
+            rest = rest.slice(1);
+            if (rest) finishLine();
+          }
+          continue;
+        }
+        append(rest.slice(0, fit));
+        rest = rest.slice(fit);
+        if (rest) finishLine();
+      }
+    }
+  }
+
+  if (line.runs.length || lines.length === 0) finishLine();
+  return lines;
+}
+
+function pdfLineHeight(line: PdfTextLine, baseFontSize: number, lineHeightMm: number): number {
+  return lineHeightMm * Math.max(1, line.maxFontSize / baseFontSize);
+}
+
+function drawPdfSpans(
+  doc: jsPDF,
+  line: PdfTextLine,
+  x: number,
+  y: number,
+  mapPoint: (x: number, y: number) => { x: number; y: number; angle: number },
+  rotated: boolean,
+  color: [number, number, number],
+  lineHeightMm: number,
+  justifyWidth?: number
+) {
+  let offset = x;
+  const stretchableSpaces = line.runs.reduce((count, run, index) =>
+    count + Number(run.text === ' ' && index > 0 && index < line.runs.length - 1 &&
+      !/^\s+$/.test(line.runs[index - 1].text) && !/^\s+$/.test(line.runs[index + 1].text)), 0);
+  const addedSpace = justifyWidth && stretchableSpaces > 0
+    ? Math.max(0, justifyWidth - line.width) / stretchableSpaces : 0;
+  for (const [index, run] of line.runs.entries()) {
+    const point = mapPoint(offset, y);
+    const left = rotated ? point.x - run.width : point.x;
+    doc.setFont(run.fontName, run.fontStyle);
+    doc.setFontSize(run.fontSize);
+    doc.setTextColor(...color);
+
+    if (run.span.highlight || run.span.type === 'code') {
+      if (run.span.highlight) doc.setFillColor(254, 240, 138);
+      else doc.setFillColor(243, 244, 246);
+      const top = rotated ? point.y - lineHeightMm * 0.28 : point.y - lineHeightMm * 0.72;
+      doc.rect(left, top, run.width, lineHeightMm * 0.85, 'F');
+    }
+
+    doc.text(run.text, point.x, point.y, { angle: point.angle, align: 'left' });
+
+    if (run.span.type === 'link' && run.span.href && !run.span.isAnchor) {
+      doc.link(left, point.y - lineHeightMm * (rotated ? 0.25 : 0.75), run.width, lineHeightMm, {
+        url: run.span.href,
+      });
+    }
+
+    if (run.span.type === 'link' || run.span.underline || run.span.strikethrough) {
+      doc.setDrawColor(80, 80, 80);
+      doc.setLineWidth(0.12);
+      if (run.span.type === 'link' || run.span.underline) {
+        const underlineY = point.y + (rotated ? -0.35 : 0.35);
+        doc.line(left, underlineY, left + run.width, underlineY);
+      }
+      if (run.span.strikethrough) {
+        const strikeY = point.y + (rotated ? 1 : -1) * lineHeightMm * 0.28;
+        doc.line(left, strikeY, left + run.width, strikeY);
+      }
+    }
+
+    offset += run.width;
+    if (addedSpace && run.text === ' ' && index > 0 && index < line.runs.length - 1 &&
+        !/^\s+$/.test(line.runs[index - 1].text) && !/^\s+$/.test(line.runs[index + 1].text)) {
+      offset += addedSpace;
+    }
+  }
+}
+
 function renderPanel(
   doc: jsPDF,
   page: PageDocument,
@@ -763,7 +921,17 @@ function renderPanel(
         totalNeededH += qrSizeMm + (item.qrCaption ? 5.5 : 2.5) + 3.8;
       } else if (!item.text) {
         totalNeededH += lineHeightMm * 0.5;
+      } else if (hasInlineFontSize(item.spans)) {
+        const heading = item.isHeading1 || item.isHeading2 || item.isHeading3;
+        const fontSize = heading ? bodyPt + 0.5 : bodyPt - 0.5;
+        const lines = layoutPdfSpans(doc, item.spans, contentWidth, fontName,
+          heading ? 'bold' : 'italic', fontSize);
+        totalNeededH += lines.reduce((height, line) =>
+          height + pdfLineHeight(line, fontSize, lineHeightMm) * 1.15, 0);
       } else {
+        const heading = item.isHeading1 || item.isHeading2 || item.isHeading3;
+        doc.setFont(fontName, heading ? 'bold' : 'italic');
+        doc.setFontSize(heading ? bodyPt + 0.5 : bodyPt - 0.5);
         const splitSub = doc.splitTextToSize(item.text, contentWidth);
         totalNeededH += splitSub.length * lineHeightMm * 1.15;
       }
@@ -817,6 +985,21 @@ function renderPanel(
         const pt2 = mapPoint(contentWidth * 0.85, currY);
         doc.line(pt1.x, pt1.y, pt2.x, pt2.y);
         currY += lineHeightMm * 0.7;
+        continue;
+      }
+
+      if (hasInlineFontSize(item.spans)) {
+        const heading = item.isHeading1 || item.isHeading2 || item.isHeading3;
+        const fontSize = heading ? bodyPt + 0.5 : bodyPt - 0.5;
+        const lines = layoutPdfSpans(doc, item.spans, contentWidth, fontName,
+          heading ? 'bold' : 'italic', fontSize);
+        const color: [number, number, number] = heading ? [30, 30, 30] : [60, 60, 60];
+        for (const line of lines) {
+          if (currY >= maxY) break;
+          drawPdfSpans(doc, line, (contentWidth - line.width) / 2, currY,
+            mapPoint, rotated, color, pdfLineHeight(line, fontSize, lineHeightMm));
+          currY += pdfLineHeight(line, fontSize, lineHeightMm) * 1.15;
+        }
         continue;
       }
 
@@ -907,6 +1090,34 @@ function renderPanel(
         const isHeader = !!item.isTableHeader;
         doc.setFont(fontName, isHeader ? 'bold' : 'normal');
 
+        if (item.tableCells.some((cell) => hasInlineFontSize(cell.spans))) {
+          const numCols = item.tableCells.length;
+          const twoColumns = numCols === 2;
+          const cellW = twoColumns ? (contentWidth - 2) / 2 : contentWidth / numCols;
+          const fontSize = twoColumns ? (isHeader ? bodyPt : bodyPt - 0.3) : bodyPt - 0.7;
+          const color: [number, number, number] = isHeader ? [20, 20, 20] : [45, 45, 45];
+          let rowHeight = 0;
+
+          item.tableCells.forEach((cell, column) => {
+            const lines = layoutPdfSpans(doc, cell.spans, cellW, fontName,
+              isHeader ? 'bold' : 'normal', fontSize);
+            const columnX = twoColumns ? column * (cellW + 2) : column * cellW;
+            const leftAligned = twoColumns || (column === 0 && numCols > 4);
+            let cellY = currY;
+            for (const line of lines) {
+              if (cellY >= maxY) break;
+              const lineX = columnX + (leftAligned ? 0 : (cellW - line.width) / 2);
+              const height = pdfLineHeight(line, fontSize, lineHeightMm);
+              drawPdfSpans(doc, line, lineX, cellY, mapPoint, rotated, color, height);
+              cellY += height;
+            }
+            rowHeight = Math.max(rowHeight, cellY - currY);
+          });
+
+          currY += Math.max(rowHeight, lineHeightMm * (isHeader ? 1.05 : 0.95));
+          continue;
+        }
+
         if (item.tableCells.length === 2) {
           doc.setFontSize(isHeader ? bodyPt : bodyPt - 0.3);
           doc.setTextColor(isHeader ? 20 : 45, isHeader ? 20 : 45, isHeader ? 20 : 45);
@@ -968,6 +1179,43 @@ function renderPanel(
 
       const indent = item.isBullet ? 4 : item.isBlockquote ? 4 : 0;
       const availableWidth = contentWidth - indent;
+
+      if (hasInlineFontSize(item.spans)) {
+        const baseStyle = item.isHeading1 || item.isHeading2 || item.isHeading3
+          ? 'bold' : item.isBlockquote ? 'italic' : 'normal';
+        const baseFontSize = item.isHeading1 || item.isHeading2 || item.isHeading3
+          ? bodyPt + 0.5 : item.isBlockquote ? bodyPt - 0.2 : bodyPt;
+        const color: [number, number, number] = item.isHeading1 || item.isHeading2 || item.isHeading3
+          ? [30, 30, 30] : item.isBlockquote ? [60, 60, 60] : [40, 40, 40];
+        const richLines = layoutPdfSpans(doc, item.spans, availableWidth, fontName, baseStyle, baseFontSize);
+
+        if (item.isBlockquote) {
+          const quoteH = richLines.reduce((height, line) => height + pdfLineHeight(line, baseFontSize, lineHeightMm), 0);
+          doc.setDrawColor(217, 119, 6);
+          doc.setLineWidth(0.35);
+          const from = mapPoint(1.2, currY - lineHeightMm * 0.7);
+          const to = mapPoint(1.2, currY + quoteH - lineHeightMm * 0.7);
+          doc.line(from.x, from.y, to.x, to.y);
+        }
+
+        for (let index = 0; index < richLines.length && currY < maxY; index++) {
+          const line = richLines[index];
+          if (item.isBullet && index === 0) {
+            const point = mapPoint(0, currY);
+            doc.setFont(fontName, 'normal');
+            doc.setFontSize(bodyPt);
+            doc.text('•', point.x, point.y, { angle: point.angle, align: 'left' });
+          }
+          drawPdfSpans(doc, line, indent, currY, mapPoint, rotated, color,
+            pdfLineHeight(line, baseFontSize, lineHeightMm),
+            settings.textAlign === 'justify' && !item.isHeading1 && !item.isHeading2 &&
+            !item.isHeading3 && !item.isBullet && !item.isBlockquote && index < richLines.length - 1
+              ? availableWidth : undefined);
+          currY += pdfLineHeight(line, baseFontSize, lineHeightMm);
+        }
+        continue;
+      }
+
       const cleanLineText = sanitizeForJsPdf(item.text);
       const splitSubLines = doc.splitTextToSize(cleanLineText, availableWidth);
 

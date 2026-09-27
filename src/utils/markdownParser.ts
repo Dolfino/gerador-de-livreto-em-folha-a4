@@ -577,13 +577,13 @@ export function tokenizeMarkdownLine(
         const val = fsMatch[1].trim();
         if (val.endsWith('%')) {
           const num = parseFloat(val);
-          if (!isNaN(num)) fontSizeScale = num / 100;
+          if (Number.isFinite(num) && num > 0) fontSizeScale = num / 100;
         } else if (val.endsWith('em') || val.endsWith('rem')) {
           const num = parseFloat(val);
-          if (!isNaN(num)) fontSizeScale = num;
+          if (Number.isFinite(num) && num > 0) fontSizeScale = num;
         } else if (val.endsWith('pt') || val.endsWith('px')) {
           const num = parseFloat(val);
-          if (!isNaN(num)) fontSizeScale = num / 10;
+          if (Number.isFinite(num) && num > 0) fontSizeScale = num / 10;
         }
       }
       spans.push(...applyFormatSpans(inner, { highlight, fontSizeScale }, refMap));

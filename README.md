@@ -55,6 +55,8 @@ Aplicação web para produzir um minilivro clássico de 8 páginas (zine) a part
 
 Na revisão das páginas, espaços consecutivos e recuos são preservados na prévia e no PDF. A tecla **Tab** insere quatro espaços no campo de texto; **Shift+Tab** move o foco para fora dele. Ao distribuir um texto longo automaticamente, revise os recuos depois na página individual.
 
+Trechos com `<small>`, `<big>` ou `<span style="font-size: 0.8em">` mantêm seu tamanho relativo no PDF, inclusive quando há tamanhos diferentes na mesma linha.
+
 Para alinhar dois itens lado a lado, use uma tabela Markdown. As colunas continuam alinhadas ao alterar a fonte:
 
 ```markdown
