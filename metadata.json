@@ -1,0 +1,6 @@
+{
+  "name": "Minilivro 8P — Gerador de Livreto em Folha A4",
+  "description": "Crie minilivros de 8 páginas a partir de uma única folha A4 com imposição automática, distribuição de texto, prévia de leitura e guia de dobra e corte.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
