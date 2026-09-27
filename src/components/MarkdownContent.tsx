@@ -438,5 +438,5 @@ export const MarkdownContent: React.FC<MarkdownContentProps> = ({
     );
   };
 
-  return <div className={`space-y-1.5 ${className}`}>{parsedLines.map(renderLine)}</div>;
+  return <div className={`space-y-1.5 whitespace-pre-wrap ${className}`}>{parsedLines.map(renderLine)}</div>;
 };

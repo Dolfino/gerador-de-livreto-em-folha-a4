@@ -9,6 +9,8 @@
  * 6. Inline Formatting: **bold**, *italic*, `code`
  */
 
+import { expandTabs } from './textWhitespace';
+
 export interface MarkdownSpan {
   type: 'text' | 'link' | 'code';
   text: string;
@@ -382,7 +384,7 @@ export function tokenizeMarkdownLine(
   refMap?: Map<string, { href: string; title?: string }>
 ): MarkdownSpan[] {
   const spans: MarkdownSpan[] = [];
-  let remaining = text;
+  let remaining = expandTabs(text);
 
   // Patterns
   // 0. QR Code: [qr: Legenda](url) or ![qr: Legenda](url) or [qr: Legenda|lg](url) or [qr: Legenda|url]
@@ -807,27 +809,27 @@ export function parseMarkdownText(
     let isHeading3 = false;
     let isBullet = false;
     let isBlockquote = false;
-    let contentToTokenize = trimmed;
+    let contentToTokenize = line;
     let anchorId: string | undefined = undefined;
 
     if (trimmed.startsWith('# ')) {
       isHeading1 = true;
-      contentToTokenize = trimmed.slice(2).trim();
+      contentToTokenize = line.replace(/^([ \t]*)# /, '$1');
       anchorId = slugify(contentToTokenize);
     } else if (trimmed.startsWith('## ')) {
       isHeading2 = true;
-      contentToTokenize = trimmed.slice(3).trim();
+      contentToTokenize = line.replace(/^([ \t]*)## /, '$1');
       anchorId = slugify(contentToTokenize);
     } else if (trimmed.startsWith('### ')) {
       isHeading3 = true;
-      contentToTokenize = trimmed.slice(4).trim();
+      contentToTokenize = line.replace(/^([ \t]*)### /, '$1');
       anchorId = slugify(contentToTokenize);
     } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
       isBullet = true;
-      contentToTokenize = trimmed.slice(2).trim();
+      contentToTokenize = line.replace(/^([ \t]*)[-*] /, '$1');
     } else if (trimmed.startsWith('> ') || trimmed.startsWith('>')) {
       isBlockquote = true;
-      contentToTokenize = trimmed.replace(/^>\s?/, '').trim();
+      contentToTokenize = line.replace(/^([ \t]*)>\s?/, '$1');
     }
 
     const spans = tokenizeMarkdownLine(contentToTokenize, combinedRefMap);

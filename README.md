@@ -51,6 +51,17 @@ Aplicação web para produzir um minilivro clássico de 8 páginas (zine) a part
    - **Prévia da Folha Aberta**: veja a imposição exata da folha A4 (297 × 210 mm) com as páginas superiores invertidas em 180°, marcas de dobra e a fenda de corte central.
    - Clique em **Baixar PDF** (gera PDF vetorial com textos selecionáveis) ou **Imprimir**.
 
+### Espaçamento no editor
+
+Na revisão das páginas, espaços consecutivos e recuos são preservados na prévia e no PDF. A tecla **Tab** insere quatro espaços no campo de texto; **Shift+Tab** move o foco para fora dele. Ao distribuir um texto longo automaticamente, revise os recuos depois na página individual.
+
+Para alinhar dois itens lado a lado, use uma tabela Markdown. As colunas continuam alinhadas ao alterar a fonte:
+
+```markdown
+| **□• Tarefa** (a fazer) | **○ Evento** (reunião/data) |
+|---|---|
+```
+
 ---
 
 ## 📐 Imposição e Montagem Física

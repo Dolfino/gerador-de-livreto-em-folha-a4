@@ -2,6 +2,7 @@ import { jsPDF } from 'jspdf';
 import { BookSettings, PageDocument, OutputMode } from '../types';
 import { getHeaderFooterContent } from './headerFooterHelper';
 import { getPageFontSizePt } from './textDistributor';
+import { expandTabs } from './textWhitespace';
 
 export interface PDFExportOptions {
   fileName?: string;
@@ -22,7 +23,7 @@ import { resolvePageImages, ensureDataUrl } from './imageHelper';
 
 export function sanitizeForJsPdf(text: string): string {
   if (!text) return '';
-  return text
+  return expandTabs(text)
     .replace(/□/g, '[ ]')
     .replace(/○/g, '( )')
     .replace(/👁/g, '[Pesq]')
@@ -33,8 +34,7 @@ export function sanitizeForJsPdf(text: string): string {
     .replace(/💡/g, '')
     .replace(/🏁/g, '')
     .replace(/📝/g, '')
-    .replace(/[\u{1F300}-\u{1FAFF}]/gu, '')
-    .trim();
+    .replace(/[\u{1F300}-\u{1FAFF}]/gu, '');
 }
 
 /**

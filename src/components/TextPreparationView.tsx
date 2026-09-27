@@ -32,6 +32,8 @@ import { PosterEditor } from './PosterEditor';
 import { countMarkdownWords } from '../utils/markdownParser';
 import { LinkInsertModal } from './LinkInsertModal';
 import { QrCodeInsertModal } from './QrCodeInsertModal';
+import { handleTextareaTab } from '../utils/textareaKeyboard';
+import { TAB_SIZE } from '../utils/textWhitespace';
 
 interface TextPreparationViewProps {
   rawText: string;
@@ -602,12 +604,19 @@ export const TextPreparationView: React.FC<TextPreparationViewProps> = ({
 
         <textarea
           ref={textareaRef}
+          aria-label="Texto para preparar"
+          aria-describedby="preparation-spacing-hint"
           rows={12}
           value={rawText}
           onChange={(e) => setRawText(e.target.value)}
+          onKeyDown={(e) => handleTextareaTab(e, setRawText)}
+          style={{ tabSize: TAB_SIZE }}
           placeholder="Cole seu texto longo aqui... Pode usar quebras de linha para indicar parágrafos e marcadores markdown (# Título, ## Subtítulo, **negrito**, etc)."
           className="w-full p-3.5 text-xs font-serif border border-stone-300 rounded-lg focus:ring-1 focus:ring-stone-900 focus:border-stone-900 leading-relaxed text-stone-800 bg-[#FCFCFA]"
         />
+        <p id="preparation-spacing-hint" className="text-[10px] text-stone-500 mt-1">
+          Tab insere 4 espaços; Shift+Tab sai do campo. Ajuste recuos na revisão das páginas.
+        </p>
 
         {/* Markdown Links & Text Formatting Visual Guide */}
         {showMarkdownLinkGuide && (

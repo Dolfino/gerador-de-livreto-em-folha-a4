@@ -34,6 +34,8 @@ import { PosterEditor } from './PosterEditor';
 import { getHeaderFooterContent } from '../utils/headerFooterHelper';
 import { HeaderFooterModal } from './HeaderFooterModal';
 import { MarkdownContent } from './MarkdownContent';
+import { handleTextareaTab } from '../utils/textareaKeyboard';
+import { TAB_SIZE } from '../utils/textWhitespace';
 import { LinkInsertModal } from './LinkInsertModal';
 import { QrCodeInsertModal } from './QrCodeInsertModal';
 import { PageImageRenderer } from './PageImageRenderer';
@@ -1119,16 +1121,23 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                   </div>
                 )}
 
+                <p id="page-spacing-hint" className="text-[10px] text-stone-500 mb-1">
+                  Espaços são preservados. Tab insere 4 espaços; Shift+Tab sai do campo.
+                </p>
                 <textarea
                   ref={textareaRef}
+                  aria-label="Conteúdo da Página"
+                  aria-describedby="page-spacing-hint"
                   rows={8}
                   value={currentPage.content || ''}
                   onChange={(e) => onUpdatePage(currentPage.id, { content: e.target.value })}
+                  onKeyDown={(e) => handleTextareaTab(e, (content) => onUpdatePage(currentPage.id, { content }))}
                   onSelect={handleSelectionChange}
                   onKeyUp={handleSelectionChange}
                   onMouseUp={handleSelectionChange}
                   placeholder="Escreva ou edite o conteúdo desta página... Dica: selecione qualquer trecho com o mouse para enviá-lo diretamente para a próxima página."
                   style={{
+                    tabSize: TAB_SIZE,
                     fontSize: `${Math.max(12, Math.min(18, Math.round(effectiveFontSizePt * 1.35)))}px`,
                   }}
                   className={`w-full p-3 font-serif border border-stone-300 ${
