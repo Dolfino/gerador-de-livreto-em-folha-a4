@@ -916,9 +916,9 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                     )}
 
                     {/* Barra de Fluxo de Parágrafos e Preenchimento */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-stone-200/70">
+                    <div className="flex flex-wrap items-center justify-center gap-2 pt-2 border-t border-stone-200/70">
                       {/* Ajustes de Parágrafos */}
-                      <div className="flex items-center gap-1.5 flex-wrap">
+                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
                         <button
                           type="button"
                           onClick={handlePullFromPrev}
@@ -954,7 +954,7 @@ export const PageEditorView: React.FC<PageEditorViewProps> = ({
                       </div>
 
                       {/* Ferramentas de Preenchimento da Página */}
-                      <div className="flex items-center gap-1.5 flex-wrap">
+                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
                         {onPackPageCompletely && (
                           <button
                             type="button"
