@@ -296,19 +296,54 @@ Página 15, interna à contracapa. Ideal para colofão, dados de publicação, t
 
 export const LITERARY_SAMPLE_TEXT = `# O Pescador e a Gaivota Dourada
 
-Havia na enseada de pedra um velho pescador de nome Vicente, cujos olhos tinham a mesma cor azul-profunda da maré alta ao amanhecer. Vicente conhecia cada vento pelo perfume de sal e cada corrente marítima pelo rumor nas quilhas do seu pequeno barco de pinho.
+Era uma vez, numa pequena vila de pescadores onde o vento sempre cheirava a sal, um homem chamado **Tomás**. Tomás era um pescador de poucas palavras e coração generoso, que vivia em uma cabana simples à beira-mar. Ao contrário dos outros pescadores, que usavam grandes redes e buscavam o lucro rápido, Tomás pescava apenas o necessário para o seu sustento, respeitando o ritmo e os mistérios do oceano.
 
-Nas manhãs de névoa densa, quando outros marinheiros hesitassem em soltar as amarras, Vicente içava a sua vela remendada e rumava para o largo. Ele dizia que o mar guarda os seus maiores segredos apenas para quem sabe escutar o silêncio entre as ondas.
+Uma noite, uma tempestade violenta desabou sobre a costa. As ondas erguiam-se como muralhas pretas e o vento uivava como um lobo ferido. Tomás passou a noite em claro, ouvindo o clamor dos elementos. Quando o amanhecer finalmente rompeu, trazendo uma calmaria cinzenta, ele caminhou pela praia para avaliar os estragos.
 
-Certo dia, enquanto o sol despontava como uma brasa redonda sobre o horizonte, uma gaivota de asas claras e pontas douradas pousou na proa do seu barco. Ela não pedia migalhas nem peixe; apenas olhava Vicente com uma serenidade que parecia vir de tempos imemoriais.
+Entre as algas e os destroços trazidos pela maré, algo reluziu. Tomás aproximou-se e soltou um suspiro de espanto. Deitada na areia úmida estava uma gaivota, mas não uma ave comum. **Suas penas brilhavam com o fulgor do ouro puro**, refletindo os primeiros raios de sol. Ela estava viva, mas com uma asa ferida e o olhar enfraquecido.
 
-— Para onde você voa quando a tempestade fecha o céu? — perguntou Vicente, falando baixo para não assustar o pássaro. A gaivota inclinou a cabeça e soltou um chamado nítido, apontando a asa em direção às ilhas esquecidas ao norte.
+## O Resgate e a Amizade
 
-Vicente ajustou o leme e seguiu o rumo indicado pelo pássaro solar. As águas, antes revoltas, abriram-se em uma planície de prata límpida, onde cardumes inteiros brilhavam sob o sol como joias dispersas.
+Com todo o cuidado, Tomás recolheu a criatura em seus braços calejados. Levou-a para a cabana, improvisou um ninho com tecidos macios e tratou de sua asa com ervas e bálsamos que conhecia. Durante semanas, ele dividiu seu humilde alimento com a ave. A gaivota dourada, por sua vez, observava o pescador com olhos inteligentes, profundos como o próprio mar.
 
-Ali compreendeu que nem toda rota precisa de cartas náuticas de papel: algumas dependem da coragem de confiar no inesperado e na sabedoria que a própria natureza nos sopra quando estamos prontos para ouvir.
+À medida que a asa da ave cicatrizava, uma amizade silenciosa crescia entre eles. Quando Tomás saía em seu pequeno barco de madeira, a gaivota — que já conseguia planar — acompanhava-o do alto. Ela possuía um dom extraordinário:
 
-Ao entardecer, quando Vicente retornou à aldeia com a rede cheia e o coração em paz, a gaivota alçou voo rumo às estrelas nascentes, deixando na proa uma única pena que reluzia como ouro polido na penumbra do cais.`;
+- Conseguia enxergar as correntes secretas do oceano.
+- Localizava os cardumes escondidos nas profundezas.
+- Indicava a Tomás exatamente onde lançar a linha através de rasantes precisos.
+
+O pescador nunca mais voltou para casa de mãos vazias, mas mantinha sua promessa de pegar apenas o que precisava.
+
+## A Ameaça da Ganância
+
+A vida era perfeita na sua simplicidade, até que o segredo se espalhou. Outros pescadores da vila viram a ave reluzente e perceberam que Tomás prosperava sem esforço. A ganância logo tomou conta da vila. O homem mais rico da região, um comerciante ganancioso chamado Baltazar, ofereceu uma fortuna a Tomás pela ave.
+
+— *Ela é apenas uma criatura do mar, Tomás. Com o ouro que te darei, poderá comprar um navio de verdade* — argumentou Baltazar.
+
+Tomás recusou categoricamente:
+— *A liberdade e a amizade não têm preço. Ela não me pertence.*
+
+Naquela mesma noite, movido pela inveja e pela cobiça, Baltazar invadiu a cabana de Tomás enquanto este dormia e capturou a gaivota dourada, prendendo-a em uma gaiola de ferro pesado.
+
+## O Confronto no Mar Revolto
+
+Ao acordar e ver o ninho vazio, o coração de Tomás apertou-se de dor. Ele correu até o porto e viu o grande navio de Baltazar já se afastando do cais. No convés, a gaiola de ferro exibia a ave, que debatia suas asas de ouro desesperadamente.
+
+Tomás não hesitou. Saltou em seu pequeno barco e remou com todas as suas forças atrás do navio. O céu, como se partilhasse da fúria do pescador, começou a escurecer rapidamente. Uma nova tempestade, ainda mais terrível que a primeira, formou-se em minutos.
+
+As ondas gigantescas sacudiam o navio de Baltazar, que começou a inclinar perigosamente. No meio do caos, a gaiola de ferro soltou-se das amarras e rolou em direção à borda do convés, caindo nas águas turbulentas.
+
+Tomás largou os remos e mergulhou no mar revolto. A água fria tentava puxá-lo para as profundezas, mas ele nadou contra a correnteza até alcançar a gaiola que afundava. Com las últimas forças que lhe restavam, ele conseguiu abrir a tranca submersa.
+
+## O Legado da Pena de Ouro
+
+A gaivota dourada emergiu da gaiola, disparando em direção ao céu como um raio de sol rasgando a tempestade. Ela circulou sobre Tomás, que já não tinha forças para nadar. A ave soltou um canto agudo e melodioso, um som que parecia acalmar as próprias águas.
+
+De repente, uma onda suave, moldada como uma mano gigante, ergueu Tomás e o depositou delicadamente de volta em seu pequeno barco de madeira. O navio de Baltazar, por outro lado, foi empurrado pelo vento de volta ao porto, quebrado e vazio.
+
+Quando Tomás abriu os olhos, a tempestade havia desaparecido. A gaivota dourada pousou na proa do seu barco. Ela olhou para ele uma última vez, e suas penas brilharam com tanta intensidade que Tomás teve que fechar os olhos. Quando os abriu novamente, a ave havia partido, deixando em seu lugar uma única **pena de ouro maciço**.
+
+Tomás guardou a pena, mas nunca a vendeu. Ela tornou-se um lembrete do valor da lealdade e do respeito à natureza. Ele continuou a pescar todos os dias em seu pequeno barco e, dizem os mais antigos, sempre que Tomás enfrentava uma névoa densa, um brilho dourado surgia no céu para lhe mostrar o caminho de volta para casa.`;
 
 export const LITERARY_SAMPLE_16P = `# As Cartas Secretas do Farol Velho
 
